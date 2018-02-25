@@ -1,0 +1,166 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.3 (9/9/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside]{article}
+
+\usepackage{graphicx}
+
+\usepackage{booktabs,tabularx}
+
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=15pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+\usepackage{amsmath}
+
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{XOR Open Loan}} % Article title
+\author{\large\textsc{Matthew Black, Vidur Sanandan, Yash Sinha}\\[2mm]} % Your name
+
+
+\date{}
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+
+\begin{abstract}
+XOR Open Loan is a unique open source and completely decentralized system that makes loan contracts that are low cost for borrowers, high return for lenders, and contain end-to-end transparency and immutability on the blockchain. XOR Open Loan removes the middleman underwriter by assigning a score analog to borrowers created by a distributed consensus from other borrowers with a Trust Score, which is the XOR Open Loan analog to credit scores. With this, all administrative and personnel fees are removed, immediately making an XOR Open Loan orders of magnitude more cost effective than a regular loan contract signed by a trusted third party. In addition, because lenders are themselves incentivized to make a maximum return on investment, they are incentivized to make the fee-to-interest ratio on the loan as low as possible. This creates a situation where both parties get the best possible deal. This has huge implications for regular borrowers as well as borrowers from third-world countries, because creating access to transparent loans allows these people to leverage their personal wealth through loans and credit, enabling access to modern financial systems, thus massively and scaleably to escape from poverty.  Moreover, the XOR Open Loan system records all loan contracts on a public ledger on the blockchain. This means that all contracts are guaranteed to be transparent. The implications for a transparent, trustable loan contract system are huge; generally speaking, the concept of debt can be used to model almost any economic system. Thus, a transparent open source loan contract allows for the possibility of infinite numbers of derivative markets based on those debt obligations that can be created by anyone because of XOR Open Loan?s open source paradigm. In essence, anyone in the world has the ability to create their own market on anything. Possibilities range from markets based on sports bets to transparent CDOs where every tranch is available to view and verify. XOR Open Loan will bring leverage to everyone in the world, democratizing a power previously only held by large self-interested banks. The possibilities, which are up to the creativity and interest of the general public, are literally endless.
+\end{abstract}
+\section{Introduction}
+When a loan request is initiated by a borrower, the network of lenders bids for the contract. This immediately reduces the net cost to a minimum for the borrower. The lender then checks if the borrower has a Trust Score. There are two possibilities: 
+\begin{enumerate}
+\item The borrower has an existing Trust Score. If the score is high, the investment is low risk, so the market will adjust the interest rate to be low. If the score is low, then the interest rate will be high. 
+\item The borrower does not have a Trust Score. The initial loan amount will be small and high-interest. If the borrower can find other trusted borrowers with Trust Scores to verify trustworthiness, then the borrower can access a higher loan amount with better interest rates with a system called Social Verifiability.
+\end{enumerate}
+
+After both parties accept the contract, the lender will lock a collateral fee into an insurance pool consisting of all lender collateral fees. The collateral fee is a function of the risk profile of the borrower and the overall riskiness of the market. A higher risk contract will warrant a higher collateral as a hedge against a default event. The network of lenders will vote on the collateral required due to the inherent riskiness on the market, and this amount will be added to the contractual collateral. When a default occurs, the lender will receive the original loan amount back from the pool over time so as to avoid wiping out the insurance pool. Upon settlement of the loan contract, the lender will receive the full loaned amount plus interest from the borrower. 
+
+It is important to know that the model of lending and borrowing can be extended to almost any financial asset. Thus, the premise of XOR Open Loan does not necessarily have to revolve around people exchanging peer to peer loans, but can also include such examples as currency itself. Currency is only useful because someone accepts that currency as payment for a debt. For example, a debt could be incurred by buying ice cream. This, and many other economic systems, can be modeled as an XOR Open Loan contract. 
+
+\section{Contract Bidding and Pricing}
+Bidding and pricing are processed in rounds. XOR Open Loan is a general framework that allows rounds to last any amount of time. Within a round, lenders define the net aggregated risk of the market and vote upon a collateral fee based on the risk. 
+\subsection{Bidding}
+Borrowers will always look for the highest amount of cash for the lowest interest rate. On the other hand, lenders will always look for lending the lowest amount of cash at the highest interest rate. While these may seem to be conflicts of interest at first, the XOR Open Loan system creatives incentives for both parties to participate fairly and in a mutually beneficial manner. 
+
+Lenders on the lender network can bid on newly posted loan requests. This drives the interest rate down to as low as possible given the market conditions, meaning that borrowers are highly likely to get the best possible deal. Lenders are interested in making as high a return on investment as possible, meaning that they want to gain as much as possible in direct interest while paying very little in insurance pool fees. This further drives down the price for borrowers because lenders are incentivized to not post their insurance fees onto the buyer. While it may seem as if lenders are losing out on money, the market will force the lenders to provide the lowest possible interest rate anyways. However, because the lenders can underwrite their own loans, they can focus on reducing middleman fees because insurance is cheaper in a decentralized scheme. 
+
+When a contract is created, the XOR Open Loan system forces a low interest rate for buyers, and low insurance fees (and thus highest possible ROI on interest) for lenders. It would make no sense for a lender to place a bid for a contract with an unnecessarily high fee amount because that would devalue the bid and increase his own cost to no real benefit. In the XOR Open Loan system, everybody wins by collaborating for mutual benefit. 
+
+\subsection{Pricing}
+In order to hedge against defaults, lenders have to post a collateral fee to the insurance pool. This fee is based on the risk profile of any given contract. Risk in general is defined as $\beta$ and in general, a higher $\beta$ value of any kind will lead to higher collateral fees, defined as $V_{n}$. This is because higher risk profiles require a greater insurance hedge. For the set $B$  of $n$ borrowers such that $B_{1}, B_{2}...B_{n} \in B$ where each borrower has an associated risk profile $\beta_{n}$ in a market with an aggregate risk profile $\beta_{market}$, we can model a risk profile valuation for a single borrower $V_{n}$ with an equation of the form
+\begin{equation}
+V_{n} = f(\beta_{n}, \beta_{market})
+\end{equation}
+where $\beta_{market}$ is determined by the vote of members of the lending network. $\beta_{market}$ is a global variable that remains constant across all contracts within one round of voting, while $\beta_{n}$ is specific to each contract. An example model could be
+\begin{equation}
+V_{n} = a\times \beta_{n} + b\times \beta_{market}
+\end{equation}
+where a is determined by the lender during the bidding round, and b is voted upon by all lenders participating in the market during a round. For the set $L$ of $m$ borrowers such that $L_{1}, L_{2}...L_{m} \in L$, we can evaluate an example single voting round consensus $b$ with a weighted average of the form
+\begin{equation}
+b = \frac{\sum\limits_{i=1}^m b_{i} w_{i}}{m}
+\end{equation}
+where $b_{i}$ is the vote for weight from a single lender and $w_{i}$ is a weight parameter associated with the size of the lender's position on the market. It is possible to use an unweighted average such that every lender has an equal vote in the market. However, adding a weight constant encourages lenders to participate more in the market, introducing important liquidity to the XOR Open Loan market. Moreover, it does not make much sense for every lender to have an equal vote because a large lender's portfolio's risk $\beta_{i,portfolio}$ will on average be more correlated to $\beta_{market}$. 
+
+Combining our equations, we have a naive example model for valuing the risk of a contract in total: 
+\begin{equation}
+V_{n} = a\times \beta_{n} + \frac{\sum\limits_{i=1}^m b_{i} w_{i}}{m} \times \beta_{market}
+\end{equation}
+
+\section{Trust Protocol}
+A robust trust protocol is required in order to allow lenders to verify borrowers without a third party underwriter. The two situations that are possible are that a borrower has a Trust Score on the system, and the borrower does not have a score. In the event that the borrower does not have a score, our process of Social Verifiability will provide a Trust Score automatically. 
+\subsection{Trust Score}
+The Trust Score is the XOR Open Loan analog to a credit score. A high Trust Score indicates that a borrower is highly trustable on the network. This means that the borrower's opinion on vetting low/no credit customers is highly valuable. As a reward for having a high Trust Score, the borrower will have access to more cash and better interest rates from lenders. A high Trust Score indicates a low risk profile for that borrower. 
+
+Borrowers can increase their Trust Score $T_{n}$ by not defaulting on loans and by correctly verifying low/no credit score customers that see through their contracts. Trust Scores will decrease slightly if a low/no credit verification fails and will decrease drastically in the event of a default. 
+\begin{equation}
+T_{n,new} = T_{n} + \sum\limits_{j=1}^f  \frac{1}{T_{j,succes}} + \sum\limits_{k=1}^g  \frac{d}{T_{j,failure}}
+\end{equation}
+where $T_{n,new}$ is the new score at the end of a round of verifying, $T_{n}$ is the original score, $j$ is the index of a borrower being vetted by the verifier successfully, $f$ is the total number of borrowers verified within a round successfully, and $T_{j,success}$ is the score of one of the borrowers being verified successfully. $k$ is the index of a borrower defaulting a loan, g is the number of defaulted loans within a round, and $T_{j,failure}$ is the score of a defaulted borrower. $d$ is a positive real number weight constant that ensures that verifying a default penalizes a verifier more than a successful verification. This is necessary because without such a mechanic, verifying good borrowers would not be incentivized at all. The reciprocal of the $T$ allows for lower scores to have a higher impact. For example, in the event of a low-risk borrower defaulting, the penalty should not be high because the verifier was justified in thinking that the low-risk borrower would not default. 
+\subsection{Social Verifiability}
+In the event of a customer without a Trust Score requesting a loan, there are two primary options. The first is that the customer posts a loan request, and the contract is treated as extremely high risk. In this situation, the borrower would receive a low amount of cash and high interest. On the lender side, the lender will post a high collateral fee to the insurance pool, but will also gain high return on investment from the high interest. 
+
+Another option for a customer without a Trust Score is to receive initial verification from borrowers who have Trust Scores. We call this scheme Social Verifiability because a borrower without a Trust Score can leverage his social circle to receive verification. In this scheme, having a high number of verifiers as well as verifiers with high Trust Scores will improve the customer's initial Trust Score. We can model this relationship with an equation that follows the form: 
+\begin{equation}
+T_{n,init} = \sum\limits_{q=1}^h \frac{T_{q}}{h\times r} + \frac{h}{u}
+\end{equation}
+where $T_{n,init}$ is the new borrower's initial Trust Score, $q$ is the index of every verifier, $h$ is the total number of verifiers, $T_{q}$ is the Trust Score for a given verifier, $r$ is a weight that decreases $T_{init}$, and $u$ is a weight that decreases the effect of the number of verifiers. Without $r$ and $u$, the new borrower's Trust Score would essentially be just an average of the verifiers' scores plus a number parameter. Verifier scores are affected as per Equation (5). 
+
+\section{Contract Completion and Defaults}
+XOR Open Loan is agnostic to time parameters of the loan, meaning that contract types ranging from short-term completion timelines to perpetual swaps can be supported flexibly. Upon a contract being completed, the borrower will return all that is owed, initial amount plus interest, directly to the lender. 
+
+In the event of a default, several things happen to both sides. The borrower's Trust Score drops significantly. For the seller, the full amount without interest is paid back from the insurance pool. In order to protect lenders against an event in which one lender's large position defaults and thus greatly reduces the insurance pool, insurance payments will be paid over time. 
+
+\section{Derivative Markets Examples}
+A debt contract is the most basic asset class. Everything can be modeled as a series of debt obligations. This is perhaps the most interesting use case for XOR Open Loan. An opensourced, trustable, incentivized fair system for a debt contract allows for derivative assets to be modeled based on the debt contract as the underlying asset. We provide a few examples of common asset classes that can be modeled with XOR Open Loan. 
+\subsection{XOR Credit Default Swaps}
+Section II.II describes a contract risk pricing model. When a lender assigns a valuation in XOR Open Loan, he is essentially buying a Credit Default Swap, but with the insurance provider being the collective pool of lenders. This provides a huge opportunity for accurately priced, essentially no-fee, credit default swap contracts. These insurance purchases can then be chained as underlying assets. 
+\subsection{XOR Collateral Debt Obligations}
+An XOR Open Loan Collateral Debt Obligation would also be an incredibly impactful event in finance. The tranches of the CDO can be comprised of loans of different risk tiers. Senior tranches could receive the first payments as the tranches descend to high risk borrowing customers. 
+\subsection{XOR Synthetic CDOs}
+More interesting is the potential for synthetic CDOs. A synthetic CDO is essentially a gamble on the performance of another CDO. These gambles can chain with increasing odds, leading to a massive amount of leverage in the market that otherwise didn't exist. Synthetic CDOs when used correctly are healthy for a market because they introduce liquidity and leverage. However, many synthetic CDOs have opaque underlying assets. 
+
+An XOR Open Loan synthetic CDO would be truly revolutionary because of the blockchain architecture. All tranches of the CDO would be fully viewable due to the public ledger of the blockchain recording every step of the creation of the CDO. Thus, XOR can enable a healthy and relatively safe form of CDO leverage and liquidity. 
+\subsection{Creation of Random Markets}
+An especially unique facet of XOR Open Loan is that it enables anyone to create any type of market. As explained previously, a debt obligation contract can be used to generally model a myriad of economic systems. Because of this, the XOR Open Loan system allows for the creation of markets by anyone within the framework of fairness, accessibility, and trustworthiness built-in. For example, one could create a sports betting market, or a market betting on the weather, or even some sort of crazy nth order synthetic CDO market where the underlying assets are cryptocurrencies pegged to weather patterns. As long as there are lenders and loaners, any market can exist through XOR Open Loan. 
+
+\section{Transparency and Accessibility}
+XOR Open Loan is licensed under the open-source MIT License. This is extremely important to the full functionality of the product. The goal of XOR Open Loan is to allow for transparent and widespread trading and market making. An important facet of this is the blockchain architecture. Because XOR Open Loan contracts are stored on the blockchain, they can all be accessed in their entirety. 
+
+A big problem with the subprime mortgage crisis was that the tranches of the CDOs used were relatively inaccessible to most people. The opaqueness of the tranches prevented most investors from seeing the obvious pitfalls of subprime mortgage loans. However, with XOR Open Loan, all of the tranches will be entirely accessible. This allows for a far healthier and safer implementation of CDOs, and enables even synthetic CDOs to be a healthy financial instrument. 
+
+\section{Democracy and Social Impact}
+We believe that market making, trading, and financial asset synthesis should be available to anyone. In addition, we believe that these things greatly enable credit for those who could need it by creating leverage and allowing for loans. In many third world countries, a better life is bottlenecked because members of these countries do not have access to modern global economics. However, XOR Open Loan's open source public architecture allows for anyone with internet to create their own wealth. We think that this is a massively impactful technology that will help a lot of people. 
+
+\section{Problems and Future Additions}
+In the timeframe of the hackathon, we were unable to complete everything necessary for the XOR Open Loan system to fully work. A big example is proof-of-identity. If a borrower does not have to prove identity, then that borrower can make $x$ copies of himself and increase his leverage x-fold without actually deserving it. A proof-of-identity system is absolutely required to avoid this. A proof-of-identity implementation is well beyond the scope of one hackathon, but is still very much possible. 
+
+Another addition we would make is integration with 0x. A decentralized exchange is the perfect place to trade decentralized creative assets. Enabling seamless 0x integration would provide a strong incentive to use XOR Open Loan. 
+%----------------------------------------------------------------------------------------
+\end{document}
