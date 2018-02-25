@@ -60,6 +60,8 @@
     "uport-connect": "^0.6.1"
   },
   "scripts": {
+    "compile": "rm -rf build/contracts/*.json && truffle compile",
+    "migrate": "truffle migrate",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
