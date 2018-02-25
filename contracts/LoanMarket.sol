@@ -20,7 +20,7 @@ contract LoanMarket is Killable {
   
   Market[] public markets;
 
-  function createMarket(uint _requestPeriod, uint _loanPeriod) {  
+  function createMarket(uint _requestPeriod, uint _loanPeriod) public {  
     address[] memory lenders;
     address[] memory borrowers;
     markets.push(Market(_requestPeriod, _loanPeriod, lenders, borrowers));
