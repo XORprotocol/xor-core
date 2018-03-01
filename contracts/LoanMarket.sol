@@ -29,7 +29,7 @@ contract LoanMarket {
   function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod) public returns (uint) {
     address[] memory lenders;
     address[] memory borrowers;
-    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, block.number, "request", 0, lenders, borrowers));
+    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, block.number, "request", 0, lenders, borrowers));
     return markets.length;
   }
 
@@ -110,6 +110,5 @@ contract LoanMarket {
     // require in correct Period
     markets[_marketId].riskRating = choice;
   }
-
 
 }
