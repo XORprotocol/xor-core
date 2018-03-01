@@ -74,8 +74,9 @@
     "zeppelin-solidity": "^1.7.0"
   },
   "scripts": {
-    "compile": "truffle compile",
+    "compile": "rm -rf build/contracts/*.json && truffle compile",
     "migrate": "truffle migrate",
+    "deploy": "truffle deploy",
     "console": "truffle console",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
