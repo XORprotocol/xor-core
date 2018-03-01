@@ -10,6 +10,7 @@ module.exports = (deployer, network, accounts) => {
     var Killable = artifacts.require("./zeppelin/lifecycle/Killable.sol");
     var Authentication = artifacts.require("./Authentication.sol");
     var Markets = artifacts.require("./Markets.sol");
+    var LoanMarket = artifacts.require("./LoanMarket.sol");
 
     deployer.deploy(Ownable);
     deployer.link(Ownable, Killable);
@@ -21,6 +22,7 @@ module.exports = (deployer, network, accounts) => {
     deployer.link(PermissionsLib, DummyContract);
     deployer.deploy(DummyContract);
     deployer.link(PermissionsLib, DebtRegistry);
+    deployer.deploy(LoanMarket);
     return deployer.deploy(DebtRegistry).then(async () => {
         await deployer.deploy(DebtToken, DebtRegistry.address);
         await deployer.deploy(TokenTransferProxy);
