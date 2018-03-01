@@ -25,7 +25,7 @@ contract LoanMarket {
     mapping (address => uint) borrowerAmounts;
   }
   
-  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,bytes32,uint) {
+  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,bytes32,uint,address[],address[]) {
     Market memory curMarket = markets[_marketId];
     return (
       curMarket.requestPeriod,
@@ -35,7 +35,9 @@ contract LoanMarket {
       curMarket.totalRequested,
       curMarket.initiationTimestamp,
       curMarket.state,
-      curMarket.riskRating
+      curMarket.riskRating,
+      curMarket.lenders,
+      curMarket.borrowers
       );
   }
 
@@ -53,6 +55,12 @@ contract LoanMarket {
     return (borrower, borrowerAmount);
   }
 
+  function getMarketCount() public view returns (uint) {
+    return markets.length;
+  }
+
+  // TODO: getter for lenderAmt and borrowerAmt
+  
   function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod) public returns (uint) {
     address[] memory lenders;
     address[] memory borrowers;
