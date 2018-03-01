@@ -68,6 +68,7 @@
     "redux-thunk": "^2.2.0",
     "tiny-promisify": "^1.0.0",
     "truffle": "4.0.3",
+    "uport-connect": "^0.7.1",
     "zeppelin-solidity": "^1.7.0"
   },
   "scripts": {
