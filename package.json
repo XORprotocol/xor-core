@@ -53,6 +53,7 @@
     "NonFungibleToken": "https://github.com/dharmaprotocol/NonFungibleToken",
     "bignumber.js": "^5.0.0",
     "bootstrap": "^4.0.0",
+    "daostack-arc": "^0.0.0-alpha.28",
     "dotenv": "^2.0.0",
     "ganache-cli": "^6.0.3",
     "react": "^15.4.2",
@@ -67,7 +68,7 @@
     "redux-thunk": "^2.2.0",
     "tiny-promisify": "^1.0.0",
     "truffle": "4.0.3",
-    "zeppelin-solidity": "^1.6.0"
+    "zeppelin-solidity": "^1.7.0"
   },
   "scripts": {
     "compile": "truffle compile",
