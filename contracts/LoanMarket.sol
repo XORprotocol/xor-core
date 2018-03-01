@@ -8,7 +8,8 @@ pragma solidity ^0.4.18;
 contract LoanMarket {
   // using SafeMath for uint;
   // using PermissionsLib for PermissionsLib.Permissions;
-
+  Market[] public markets;
+  
   struct Market {
     uint requestPeriod; // in blocks
     uint votingPeriod; // in blocks
@@ -24,7 +25,33 @@ contract LoanMarket {
     mapping (address => uint) borrowerAmounts;
   }
   
-  Market[] public markets;
+  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,bytes32,uint) {
+    Market memory curMarket = markets[_marketId];
+    return (
+      curMarket.requestPeriod,
+      curMarket.votingPeriod,
+      curMarket.loanPeriod,
+      curMarket.totalLoaned,
+      curMarket.totalRequested,
+      curMarket.initiationTimestamp,
+      curMarket.state,
+      curMarket.riskRating
+      );
+  }
+
+  function getLender(uint _marketId, uint _lenderId) public view returns(address, uint) {
+    Market storage curMarket = markets[_marketId];
+    address lender = curMarket.lenders[_lenderId];
+    uint lenderAmount = curMarket.lenderAmounts[lender];
+    return (lender, lenderAmount);
+  }
+
+  function getBorrower(uint _marketId, uint _borrowerId) public view returns(address, uint) {
+    Market storage curMarket = markets[_marketId];
+    address borrower = curMarket.borrowers[_borrowerId];
+    uint borrowerAmount = curMarket.borrowerAmounts[borrower];
+    return (borrower, borrowerAmount);
+  }
 
   function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod) public returns (uint) {
     address[] memory lenders;
