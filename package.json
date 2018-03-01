@@ -1,5 +1,5 @@
 {
-  "name": "react-uport-box",
+  "name": "dharma-react-starter-kit",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
@@ -22,7 +22,6 @@
     "eslint-plugin-flowtype": "2.21.0",
     "eslint-plugin-import": "2.0.1",
     "eslint-plugin-jsx-a11y": "2.2.3",
-    "eslint-plugin-no-unused-vars-rest": "^1.0.4",
     "eslint-plugin-react": "6.4.1",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "0.9.0",
@@ -42,6 +41,7 @@
     "strip-ansi": "3.0.1",
     "style-loader": "0.13.1",
     "truffle-contract": "^1.1.8",
+    "truffle-solidity-loader": "0.0.8",
     "url-loader": "0.5.7",
     "webpack": "1.14.0",
     "webpack-dev-server": "1.16.2",
@@ -49,18 +49,28 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
+    "@dharmaprotocol/dharma.js": "^0.0.14",
+    "NonFungibleToken": "https://github.com/dharmaprotocol/NonFungibleToken",
+    "bignumber.js": "^5.0.0",
+    "bootstrap": "^4.0.0",
+    "dotenv": "^2.0.0",
+    "ganache-cli": "^6.0.3",
     "react": "^15.4.2",
+    "react-bootstrap": "^0.32.1",
     "react-dom": "^15.4.2",
+    "react-particles-js": "^2.1.0",
     "react-redux": "^5.0.2",
     "react-router": "^3.0.2",
     "react-router-redux": "^4.0.7",
     "redux": "^3.6.0",
     "redux-auth-wrapper": "^1.0.0",
     "redux-thunk": "^2.2.0",
-    "uport-connect": "^0.6.1"
+    "tiny-promisify": "^1.0.0",
+    "truffle": "4.0.3",
+    "zeppelin-solidity": "^1.6.0"
   },
   "scripts": {
-    "compile": "rm -rf build/contracts/*.json && truffle compile",
+    "compile": "truffle compile",
     "migrate": "truffle migrate",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
