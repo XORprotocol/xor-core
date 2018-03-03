@@ -17,15 +17,15 @@ contract LoanMarket {
     uint totalLoaned;
     uint totalRequested;
     uint initiationTimestamp; // time in blocks of first loan request or offer
-    bytes32 state; // request, voting, lending, reconciliation
     uint riskRating; // as voted by lenders
+    bytes32 state; // request, voting, lending, reconciliation
     address[] lenders;
     address[] borrowers;
     mapping (address => uint) lenderAmounts;
     mapping (address => uint) borrowerAmounts;
   }
   
-  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,bytes32,uint,address[],address[]) {
+  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,uint,bytes32,address[],address[]) {
     Market memory curMarket = markets[_marketId];
     return (
       curMarket.requestPeriod,
@@ -34,8 +34,8 @@ contract LoanMarket {
       curMarket.totalLoaned,
       curMarket.totalRequested,
       curMarket.initiationTimestamp,
-      curMarket.state,
       curMarket.riskRating,
+      curMarket.state,
       curMarket.lenders,
       curMarket.borrowers
       );
@@ -64,7 +64,7 @@ contract LoanMarket {
   function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod) public returns (uint) {
     address[] memory lenders;
     address[] memory borrowers;
-    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, block.number, "request", 0, lenders, borrowers));
+    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, block.number, 0, "request", lenders, borrowers));
     return markets.length;
   }
 
