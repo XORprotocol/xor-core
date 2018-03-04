@@ -24,7 +24,7 @@ contract LoanMarket {
     mapping (address => uint) lenderAmounts;
     mapping (address => uint) borrowerAmounts;
   }
-  
+
   function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,uint,bytes32,address[],address[]) {
     Market memory curMarket = markets[_marketId];
     return (
@@ -59,6 +59,21 @@ contract LoanMarket {
     return markets.length;
   }
 
+  function getMarketByState(bytes32 _state) public view returns (uint[]) {
+    uint[] storage ids;
+    for (uint i = 0; i < markets.length; i++) {
+      if (markets[i].state == _state) {
+        ids.push(i);
+      }
+    }
+    return ids;
+  }
+
+  // FOR DEBUGGING
+  function changeMarketState(uint _marketId, bytes32 _state) public {
+      markets[_marketId].state = _state;
+  }
+
   // TODO: getter for lenderAmt and borrowerAmt
   
   function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod) public returns (uint) {
@@ -71,25 +86,25 @@ contract LoanMarket {
   function offerLoan(uint _marketId) public payable {
     Market storage curMarket = markets[_marketId];
     require(curMarket.state == "request");
-    if (!checkRequestPeriod(_marketId)) {
-      throw;
-    } else {
+    // if (!checkRequestPeriod(_marketId)) {
+    //   throw;
+    // } else {
       curMarket.lenders.push(msg.sender);
       curMarket.lenderAmounts[msg.sender] = msg.value;
       curMarket.totalLoaned += msg.value;
-    }
+    // }
   }
 
   function requestLoan(uint _marketId, uint _amount) public {
     Market storage curMarket = markets[_marketId];
     require(curMarket.state == "request");
-    if (!checkRequestPeriod(_marketId)) {
-      throw;
-    } else {
+    // if (!checkRequestPeriod(_marketId)) {
+    //   throw;
+    // } else {
       curMarket.borrowers.push(msg.sender);
       curMarket.borrowerAmounts[msg.sender] = _amount;
       curMarket.totalRequested += _amount;
-    }
+    // }
   }
 
   /* TODO:
