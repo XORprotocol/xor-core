@@ -26,11 +26,6 @@ This screen shows an example market that a creditor can participate in. In this 
 1. Install truffle `npm install -g truffle`
 2. Install ganache `npm install -g ganache-cli`
 
-1. Install Rails https://gorails.com/setup/osx/10.12-sierra
-2. Install yarn `brew install yarn`
-3. Install Redis `brew install redis`
-4. Install Postgres (scroll down) https://gorails.com/setup/osx/10.12-sierra
-
 # Installation
 1. `git clone https://github.com/mattBlackDesign/xor-of-finance-mvp.git`
 2. `cd xor-of-finance-mvp`
