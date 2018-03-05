@@ -22,3 +22,21 @@ This is a window showing markets with their measured risks, number of debtors, n
 ![Screenshot](shot3.png)
 This screen shows an example market that a creditor can participate in. In this implementation, the lender is a naive human being that pushes a button to place a bid for a loan. He then creates his offer and uses that with the bid. 
 
+# Dependencies
+1. Install truffle `npm install -g truffle`
+2. Install ganache `npm install -g ganache-cli`
+
+1. Install Rails https://gorails.com/setup/osx/10.12-sierra
+2. Install yarn `brew install yarn`
+3. Install Redis `brew install redis`
+4. Install Postgres (scroll down) https://gorails.com/setup/osx/10.12-sierra
+
+# Installation
+1. `git clone https://github.com/mattBlackDesign/xor-of-finance-mvp.git`
+2. `cd xor-of-finance-mvp`
+3. run `ganache-cli`
+4. In seperate window run `yarn compile`
+5. `yarn migrate`
+6. `yarn start`
+
+
