@@ -25,14 +25,18 @@ This screen shows an example market that a creditor can participate in. In this 
 # Dependencies
 1. Install truffle `npm install -g truffle`
 2. Install ganache `npm install -g ganache-cli`
+3. Install metamask extension https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en
 
 # Installation
 1. `git clone https://github.com/mattBlackDesign/xor-of-finance-mvp.git`
 2. `cd xor-of-finance-mvp`
-4. run `npm install`
-5. run `ganache-cli`
-6. In seperate window run `yarn compile`
-7. `yarn migrate`
-8. `yarn start`
+3. Run `ganache-cli`
+4. Copy mneumonic phrase from terminal (12 word phrase)
+5. Import mneumonic phrase into metamask by clicking `Restore from seed phrase`
+6. Paste mneumonic phrase and set password
+7. Switch from `main ethereum network` to `Localhost 8545` (it should show balance 100 ETH)
+8. Back in terminal, run `yarn compile` in seperate window than `ganache-cli`
+9. Run`yarn migrate`
+10. Run `yarn start`
 
 
