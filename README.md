@@ -29,9 +29,10 @@ This screen shows an example market that a creditor can participate in. In this 
 # Installation
 1. `git clone https://github.com/mattBlackDesign/xor-of-finance-mvp.git`
 2. `cd xor-of-finance-mvp`
-3. run `ganache-cli`
-4. In seperate window run `yarn compile`
-5. `yarn migrate`
-6. `yarn start`
+4. run `npm install`
+5. run `ganache-cli`
+6. In seperate window run `yarn compile`
+7. `yarn migrate`
+8. `yarn start`
 
 
