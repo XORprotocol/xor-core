@@ -203,12 +203,12 @@ contract LoanMarket {
     uint totalRepayments;
     uint totalDefaults;
     for (uint x = 0; x < repaymentLength; x++) {
-      totalRepayments += repayments[_address][x];
+      totalRepayments = totalRepayments.add(log(repayments[_address][x]));
     }
     for (uint y = 0; y < defaultLength; y++) {
-      totalDefaults += defaults[_address][y];
+      totalDefaults = totalDefaults.add(defaults[_address][y]);
     }
-    return (log(totalRepayments) - totalDefaults);
+    return (totalRepayments - totalDefaults);
   }
 
   function addToRepayments(address _address, uint _amt) public {
