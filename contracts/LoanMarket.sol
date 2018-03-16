@@ -1,12 +1,12 @@
 pragma solidity ^0.4.18;
 
 // import "./libraries/PermissionsLib.sol";
-// import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 // import "zeppelin-solidity/contracts/ownership/Heritable.sol";
 // import "daostack-arc/contracts/VotingMachines/QuorumVote.sol";
 
 contract LoanMarket {
-  // using SafeMath for uint;
+  using SafeMath for uint;
   // using PermissionsLib for PermissionsLib.Permissions;
   Market[] public markets;
   
@@ -18,6 +18,7 @@ contract LoanMarket {
     uint totalRequested;
     uint initiationTimestamp; // time in blocks of first loan request or offer
     uint riskRating; // as voted by lenders
+    uint interestConstant;
     bytes32 state; // request, voting, lending, reconciliation
     address[] lenders;
     address[] borrowers;
@@ -28,7 +29,7 @@ contract LoanMarket {
   mapping (address => uint[]) repayments;
   mapping (address => uint[]) defaults;
 
-  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,uint,bytes32,address[],address[]) {
+  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,uint,uint,bytes32,address[],address[]) {
     Market memory curMarket = markets[_marketId];
     return (
       curMarket.requestPeriod,
@@ -38,6 +39,7 @@ contract LoanMarket {
       curMarket.totalRequested,
       curMarket.initiationTimestamp,
       curMarket.riskRating,
+      curMarket.interestConstant,
       curMarket.state,
       curMarket.lenders,
       curMarket.borrowers
@@ -79,10 +81,10 @@ contract LoanMarket {
 
   // TODO: getter for lenderAmt and borrowerAmt
   
-  function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod) public returns (uint) {
+  function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod, uint _interestConstant) public returns (uint) {
     address[] memory lenders;
     address[] memory borrowers;
-    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, block.number, 0, "request", lenders, borrowers));
+    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, block.number, 0, _interestConstant, "request", lenders, borrowers));
     return markets.length;
   }
 
@@ -217,11 +219,11 @@ contract LoanMarket {
     defaults[_address].push(_amt);
   }
 
-  // function getRepaymentAmount(uint _marketId) public view returns (uint) {
-  //   require(markets[_marketId].borrowerAmounts[msg.sender] > 0);
-  // }
+  function getRisk(address _address, uint _amt) public view returns (uint) {
+    return _amt.div(getTrustScore(_address));       
+  }
 
-  // function repayment(uint _marketId) public payable {
-
-  // } 
+  function getInterest(address _address, uint _amt, uint _marketId) public view returns (uint) {
+    return getRisk(_address, _amt).mul(markets[_marketId].interestConstant);
+  }
 }
