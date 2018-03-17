@@ -16,12 +16,16 @@ contract LoanMarket {
     uint loanPeriod; // in blocks
     uint totalLoaned;
     uint totalRequested;
+    uint curBorrowed;
+    uint curRepaid;
     uint initiationTimestamp; // time in blocks of first loan request or offer
     uint riskRating; // as voted by lenders
     uint interestConstant;
     bytes32 state; // request, voting, lending, reconciliation
     address[] lenders;
     address[] borrowers;
+    mapping (address => uint) lenderOffers;
+    mapping (address => uint) borrowerRequests;
     mapping (address => uint) lenderAmounts;
     mapping (address => uint) borrowerAmounts;
   }
@@ -53,11 +57,55 @@ contract LoanMarket {
     return (lender, lenderAmount);
   }
 
+  function getLenderIndex(uint _marketId, address _lenderAddress) public view returns (uint) {
+    uint index = 0;
+    for (uint i = 0; i < markets[_marketId].lenders.length; i++) {
+      if (markets[_marketId].lenders[i] == _lenderAddress) {
+        index = i;
+      }
+    }
+    return index;
+  }
+
+  function getLenderCount(uint _marketId) public view returns (uint) {
+    return markets[_marketId].lenders.length;
+  }
+
+  function isLender(uint _marketId, address _address) public view returns (bool) {
+    if (markets[_marketId].lenderOffers[_address] > 0) {
+        return true;
+    } else {
+        return false;
+    }
+  }
+
   function getBorrower(uint _marketId, uint _borrowerId) public view returns(address, uint) {
     Market storage curMarket = markets[_marketId];
     address borrower = curMarket.borrowers[_borrowerId];
     uint borrowerAmount = curMarket.borrowerAmounts[borrower];
     return (borrower, borrowerAmount);
+  }
+
+  function getBorrowerIndex(uint _marketId, address _borrowerAddress) public view returns (uint) {
+    uint index = 0;
+    for (uint i = 0; i < markets[_marketId].borrowers.length; i++) {
+      if (markets[_marketId].borrowers[i] == _borrowerAddress) {
+        index = i;
+      }
+    }
+    return index;
+  }
+
+  function getBorrowerCount(uint _marketId) public view returns (uint) {
+    return markets[_marketId].borrowers.length;
+  }
+
+  function isBorrower(uint _marketId, address _address) public view returns (bool) {
+    if (markets[_marketId].borrowerRequests[_address] > 0) {
+        return true;
+    } else {
+        return false;
+    }
   }
 
   function getMarketCount() public view returns (uint) {
@@ -84,7 +132,7 @@ contract LoanMarket {
   function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod, uint _interestConstant) public returns (uint) {
     address[] memory lenders;
     address[] memory borrowers;
-    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, block.number, 0, _interestConstant, "request", lenders, borrowers));
+    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, 0, 0, block.number, 0, _interestConstant, "request", lenders, borrowers));
     return markets.length;
   }
 
@@ -96,6 +144,7 @@ contract LoanMarket {
     // } else {
       curMarket.lenders.push(msg.sender);
       curMarket.lenderAmounts[msg.sender] = msg.value;
+      curMarket.lenderOffers[msg.sender] = msg.value;
       curMarket.totalLoaned += msg.value;
     // }
   }
@@ -112,10 +161,84 @@ contract LoanMarket {
     // }
   }
 
-  /* TODO:
-  function transferExcess
-        curMarket.state = 'voting';
-  */
+  function marketPool(uint _marketId) public view returns (uint) {
+    Market storage curMarket = markets[_marketId];
+    if (curMarket.totalLoaned >= curMarket.totalRequested) {
+      return curMarket.totalRequested;
+    } else {
+      return curMarket.totalLoaned;
+    }
+  }
+
+  function actualWithdrawRequested(uint _marketId, address _address) public view returns(uint) {
+    Market storage curMarket = markets[_marketId];
+    if (curMarket.totalLoaned >= curMarket.totalRequested) {
+      return curMarket.borrowerRequests[_address];
+    } else {
+      uint curValue = 0;
+      uint requestValue = 0;
+      for(uint i = 0; i < getBorrowerCount(_marketId); i++) {
+        if (curMarket.borrowers[i] == _address) {
+          if (curValue < curMarket.totalLoaned) {
+            uint newValue = curValue.add(curMarket.borrowerRequests[_address]);
+            if (newValue > curMarket.totalLoaned) {
+              uint diff = newValue.sub(curMarket.totalLoaned);
+              requestValue = curMarket.borrowerRequests[_address].sub(diff);
+            } else {
+              requestValue =  curMarket.borrowerRequests[_address];
+            }
+          }
+          break;
+        }
+        curValue = curValue.add(curMarket.borrowerRequests[curMarket.borrowers[i]]);
+      }
+      return requestValue;
+    }
+  }
+
+  function withdrawRequested(uint _marketId) public {
+    require(checkLoanPeriod(_marketId));
+    require(markets[_marketId].borrowerRequests[msg.sender] > 0);
+    require(markets[_marketId].borrowerAmounts[msg.sender] == 0);
+    uint request = actualWithdrawRequested(_marketId, msg.sender);
+    require(request > 0);
+    msg.sender.transfer(request);
+    markets[_marketId].borrowerAmounts[msg.sender].add(request);
+    markets[_marketId].curRepaid.add(request);
+  }
+
+  function calculateExcess(uint _marketId, address _address) public view returns (uint) {
+    Market storage curMarket = markets[_marketId];
+    if (curMarket.totalLoaned > curMarket.totalRequested) {
+      uint curValue = 0;
+      uint offerValue = 0;
+      for (uint i = 0; i < getLenderCount(_marketId); i++) {
+        if (curMarket.lenders[i] == _address) {
+          if (curValue < curMarket.totalRequested) {
+            uint newValue = curValue.add(curMarket.lenderOffers[_address]);
+            if (newValue > curMarket.totalRequested) {
+              uint diff = newValue.sub(curMarket.totalRequested);
+              offerValue = curMarket.lenderOffers[_address].sub(diff);
+            } else {
+              offerValue = curMarket.lenderOffers[_address];
+            }
+          }
+          break;
+        }
+        curValue = curValue.add(curMarket.lenderOffers[curMarket.lenders[i]]);
+      }
+      return offerValue;
+    } else {
+      return 0;
+    }
+  }
+
+  // Lenders removing excess from market
+  function transferExcess(uint _marketId) public {
+    require(checkLoanPeriod(_marketId));
+    require(markets[_marketId].lenderOffers[msg.sender] > 0);
+    msg.sender.transfer(calculateExcess(_marketId, msg.sender));
+  }
 
   /* START - Check Time Period Helpers */
   function checkRequestPeriod(uint _marketId) private returns (bool) {
@@ -128,18 +251,8 @@ contract LoanMarket {
     }
   }
 
-  function checkVotingPeriod(uint _marketId) private returns (bool) {
-    uint start = requestPeriodEnd(_marketId);
-    uint end = votingPeriodEnd(_marketId);
-    if (block.number >= start && block.number <= end) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function checkLoanPeriod(uint _marketId) private returns (bool) {
-    uint start = votingPeriodEnd(_marketId);
+    uint start = requestPeriodEnd(_marketId);
     uint end = lendingPeriodEnd(_marketId);
     if (block.number >= start && block.number <= end) {
       return true;
@@ -147,18 +260,24 @@ contract LoanMarket {
       return false;
     }
   }
+
+  function checkReconciliationPeriod(uint _marketId) private returns (bool) {
+    uint start = lendingPeriodEnd(_marketId);
+    if (block.number >= start) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /* END - Check Time Period Helpers */
 
   function requestPeriodEnd(uint _marketId) private returns (uint) {
     return (markets[_marketId].initiationTimestamp + markets[_marketId].requestPeriod);
   }
 
-  function votingPeriodEnd(uint _marketId) private returns (uint) {
-    return (requestPeriodEnd(_marketId) + markets[_marketId].votingPeriod);
-  }
-
   function lendingPeriodEnd(uint _marketId) private returns (uint) {
-    return (votingPeriodEnd(_marketId) + markets[_marketId].loanPeriod);
+    return (requestPeriodEnd(_marketId) + markets[_marketId].loanPeriod);
   }
 
   function vote(uint _marketId, uint choice) {
@@ -227,3 +346,4 @@ contract LoanMarket {
     return getRisk(_address, _amt).mul(markets[_marketId].interestConstant);
   }
 }
+
