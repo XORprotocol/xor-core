@@ -156,8 +156,8 @@ contract LoanMarket {
     //   throw;
     // } else {
       curMarket.borrowers.push(msg.sender);
-      curMarket.borrowerAmounts[msg.sender] = _amount;
-      curMarket.totalRequested += _amount;
+      curMarket.borrowerRequests[msg.sender] = _amount;
+      curMarket.totalRequested = curMarket.totalRequested.add(_amount);
     // }
   }
 
@@ -217,7 +217,7 @@ contract LoanMarket {
           if (curValue < curMarket.totalRequested) {
             uint newValue = curValue.add(curMarket.lenderOffers[_address]);
             if (newValue > curMarket.totalRequested) {
-              uint diff = newValue.sub(curMarket.totalRequested);
+              uint diff = curMarket.totalRequested.sub(curValue);
               offerValue = curMarket.lenderOffers[_address].sub(diff);
             } else {
               offerValue = curMarket.lenderOffers[_address];
