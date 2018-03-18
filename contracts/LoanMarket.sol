@@ -345,5 +345,30 @@ contract LoanMarket {
   function getInterest(address _address, uint _amt, uint _marketId) public view returns (uint) {
     return getRisk(_address, _amt).mul(markets[_marketId].interestConstant);
   }
+
+  function getRepayment(address _address, uint _marketId) public view returns (uint) {
+    uint request = actualWithdrawRequested(_marketId, _address);
+    return request.add(getInterest(_address, request, _marketId));
+  }
+
+  function repay(uint _marketId) public payable {
+    require(msg.value == getRepayment(msg.sender, _marketId));
+    Market storage curMarket = markets[_marketId];
+    curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
+  }
+
+  function actualLenderOffer(address _address, uint _marketId) public view returns (uint) {
+    Market storage curMarket = markets[_marketId];
+    return curMarket.lenderOffers[_address].sub(calculateExcess(_marketId, _address));
+  }
+
+  function getCollected(address _address, uint _marketId) public view returns (uint) {
+    Market storage curMarket = markets[_marketId];
+    return actualLenderOffer(_address, _marketId).mul(curMarket.curRepaid).div(marketPool(_marketId));
+  }
+
+  function withdrawCollected(uint _marketId) {
+    msg.sender.transfer(getCollected(msg.sender, _marketId));
+  }
 }
 
