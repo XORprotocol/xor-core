@@ -100,6 +100,22 @@ contract LoanMarket {
     return markets[_marketId].borrowers.length;
   }
 
+  function getBorrowerAddress(uint _marketId, uint _borrowerId) public view returns (address) {
+    return markets[_marketId].borrowers[_borrowerId];
+  }
+
+  function getRequest(uint _marketId, address _address) public view returns (uint) {
+    return markets[_marketId].lenderOffers[_address];
+  }
+
+  function getLenderAddress(uint _marketId, uint _lenderId) public view returns (address) {
+    return markets[_marketId].lenders[_lenderId];
+  }
+
+  function getOffer(uint _marketId, address _address) public view returns (uint) {
+    return markets[_marketId].borrowerRequests[_address];
+  }
+
   function isBorrower(uint _marketId, address _address) public view returns (bool) {
     if (markets[_marketId].borrowerRequests[_address] > 0) {
         return true;
@@ -241,7 +257,7 @@ contract LoanMarket {
   }
 
   /* START - Check Time Period Helpers */
-  function checkRequestPeriod(uint _marketId) private returns (bool) {
+  function checkRequestPeriod(uint _marketId) public returns (bool) {
     uint start = markets[_marketId].initiationTimestamp;
     uint end = requestPeriodEnd(_marketId);
     if (block.number >= start && block.number <= end) {
@@ -251,7 +267,7 @@ contract LoanMarket {
     }
   }
 
-  function checkLoanPeriod(uint _marketId) private returns (bool) {
+  function checkLoanPeriod(uint _marketId) public returns (bool) {
     uint start = requestPeriodEnd(_marketId);
     uint end = lendingPeriodEnd(_marketId);
     if (block.number >= start && block.number <= end) {
@@ -261,7 +277,7 @@ contract LoanMarket {
     }
   }
 
-  function checkReconciliationPeriod(uint _marketId) private returns (bool) {
+  function checkReconciliationPeriod(uint _marketId) public returns (bool) {
     uint start = lendingPeriodEnd(_marketId);
     if (block.number >= start) {
       return true;
