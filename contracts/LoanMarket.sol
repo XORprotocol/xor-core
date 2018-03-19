@@ -361,7 +361,7 @@ contract LoanMarket {
   function getTrustScore(address _address) public view returns (uint) {
     uint repaymentLength = repayments[_address].length;
     uint defaultLength = defaults[_address].length;
-    uint totalRepayments;
+    uint totalRepayments = 10;
     uint totalDefaults;
     for (uint x = 0; x < repaymentLength; x++) {
       totalRepayments = totalRepayments.add(log(repayments[_address][x]));
@@ -394,7 +394,6 @@ contract LoanMarket {
   }
 
   function repay(uint _marketId) public payable {
-    require(msg.value == getRepayment(msg.sender, _marketId));
     Market storage curMarket = markets[_marketId];
     curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
     curMarket.borrowerRepaid[msg.sender] = msg.value;
