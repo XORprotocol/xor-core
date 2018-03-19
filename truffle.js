@@ -1,3 +1,7 @@
+var HDWalletProvider = require("truffle-hdwallet-provider");
+
+var mnemonic = "gasp layer vote stick mystery motor kiss eye call ostrich hawk club";
+
 module.exports = {
     networks: {
         development: {
@@ -6,11 +10,11 @@ module.exports = {
             network_id: '*', // Match any network id,
             gas: 4712388
         },
-        kovan: {
-            host: 'localhost',
-            port: 8546,
-            network_id: '42',
-            gas: 4712388
+        ropsten: {
+            provider: function() {
+                return new HDWalletProvider(mnemonic, "https://kovan.infura.io/Q1BVKkEstxYHtF1ZLQqV")
+            },
+            network_id: 3
         }
     }
 };
