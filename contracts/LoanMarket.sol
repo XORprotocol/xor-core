@@ -28,6 +28,7 @@ contract LoanMarket {
     mapping (address => uint) borrowerRequests;
     mapping (address => uint) lenderAmounts;
     mapping (address => uint) borrowerAmounts;
+    mapping (address => uint) borrowerRepaid;
   }
 
   mapping (address => uint[]) repayments;
@@ -50,11 +51,18 @@ contract LoanMarket {
       );
   }
 
-  function getLender(uint _marketId, uint _lenderId) public view returns(address, uint) {
-    Market storage curMarket = markets[_marketId];
-    address lender = curMarket.lenders[_lenderId];
-    uint lenderAmount = curMarket.lenderAmounts[lender];
-    return (lender, lenderAmount);
+  function getLender(uint _marketId, uint _lenderId) public view returns(address, uint, uint, uint, uint ,uint) {
+    address lender = getLenderAddress(_marketId, _lenderId);
+    uint marketPoolValue = marketPool(_marketId);
+    uint actualOffer = actualLenderOffer(lender, _marketId);
+    return (
+      lender, 
+      getLenderOffer(_marketId, lender), 
+      actualOffer, 
+      getCollected(lender, _marketId), 
+      getLenderAmount(_marketId, lender), 
+      percent(actualOffer, marketPoolValue, 5)
+    );
   }
 
   function getLenderIndex(uint _marketId, address _lenderAddress) public view returns (uint) {
@@ -71,6 +79,14 @@ contract LoanMarket {
     return markets[_marketId].lenders.length;
   }
 
+  function getLenderAmount(uint _marketId, address _address) public view returns (uint) {
+    return markets[_marketId].lenderAmounts[_address];
+  }
+
+  function getLenderOffer(uint _marketId, address _address) public view returns (uint) {
+    return markets[_marketId].lenderOffers[_address];
+  }
+
   function isLender(uint _marketId, address _address) public view returns (bool) {
     if (markets[_marketId].lenderOffers[_address] > 0) {
         return true;
@@ -79,11 +95,15 @@ contract LoanMarket {
     }
   }
 
-  function getBorrower(uint _marketId, uint _borrowerId) public view returns(address, uint) {
-    Market storage curMarket = markets[_marketId];
-    address borrower = curMarket.borrowers[_borrowerId];
-    uint borrowerAmount = curMarket.borrowerAmounts[borrower];
-    return (borrower, borrowerAmount);
+  function getBorrower(uint _marketId, uint _borrowerId) public view returns(address, uint, uint ,uint ,uint ,uint) {
+    address borrower = markets[_marketId].borrowers[_borrowerId];
+    uint borrowerRequest = markets[_marketId].borrowerRequests[borrower];
+    uint actualBorrowerRequest = actualWithdrawRequested(_marketId, borrower);
+    uint borrowerAmount = markets[_marketId].borrowerAmounts[borrower];
+    uint borrowerRepaid = markets[_marketId].borrowerRepaid[borrower];
+    uint marketPoolValue = marketPool(_marketId);
+    uint percentage = percent(borrowerRequest, marketPoolValue, 5);
+    return (borrower, borrowerRequest, actualBorrowerRequest, borrowerAmount, borrowerRepaid, percentage);
   }
 
   function getBorrowerIndex(uint _marketId, address _borrowerAddress) public view returns (uint) {
@@ -178,7 +198,7 @@ contract LoanMarket {
   }
 
   function marketPool(uint _marketId) public view returns (uint) {
-    Market storage curMarket = markets[_marketId];
+    Market memory curMarket = markets[_marketId];
     if (curMarket.totalLoaned >= curMarket.totalRequested) {
       return curMarket.totalRequested;
     } else {
@@ -224,24 +244,23 @@ contract LoanMarket {
   }
 
   function calculateExcess(uint _marketId, address _address) public view returns (uint) {
-    Market storage curMarket = markets[_marketId];
-    if (curMarket.totalLoaned > curMarket.totalRequested) {
+    if (markets[_marketId].totalLoaned > markets[_marketId].totalRequested) {
       uint curValue = 0;
       uint offerValue = 0;
       for (uint i = 0; i < getLenderCount(_marketId); i++) {
-        if (curMarket.lenders[i] == _address) {
-          if (curValue < curMarket.totalRequested) {
-            uint newValue = curValue.add(curMarket.lenderOffers[_address]);
-            if (newValue > curMarket.totalRequested) {
-              uint diff = curMarket.totalRequested.sub(curValue);
-              offerValue = curMarket.lenderOffers[_address].sub(diff);
+        if (markets[_marketId].lenders[i] == _address) {
+          if (curValue < markets[_marketId].totalRequested) {
+            uint newValue = curValue.add(markets[_marketId].lenderOffers[_address]);
+            if (newValue > markets[_marketId].totalRequested) {
+              uint diff = markets[_marketId].totalRequested.sub(curValue);
+              offerValue = markets[_marketId].lenderOffers[_address].sub(diff);
             } else {
-              offerValue = curMarket.lenderOffers[_address];
+              offerValue = markets[_marketId].lenderOffers[_address];
             }
           }
           break;
         }
-        curValue = curValue.add(curMarket.lenderOffers[curMarket.lenders[i]]);
+        curValue = curValue.add(markets[_marketId].lenderOffers[markets[_marketId].lenders[i]]);
       }
       return offerValue;
     } else {
@@ -371,20 +390,28 @@ contract LoanMarket {
     require(msg.value == getRepayment(msg.sender, _marketId));
     Market storage curMarket = markets[_marketId];
     curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
+    curMarket.borrowerRepaid[msg.sender] = msg.value;
   }
 
   function actualLenderOffer(address _address, uint _marketId) public view returns (uint) {
-    Market storage curMarket = markets[_marketId];
-    return curMarket.lenderOffers[_address].sub(calculateExcess(_marketId, _address));
+    return markets[_marketId].lenderOffers[_address].sub(calculateExcess(_marketId, _address));
   }
 
   function getCollected(address _address, uint _marketId) public view returns (uint) {
-    Market storage curMarket = markets[_marketId];
-    return actualLenderOffer(_address, _marketId).mul(curMarket.curRepaid).div(marketPool(_marketId));
+    return actualLenderOffer(_address, _marketId).mul(markets[_marketId].curRepaid).div(marketPool(_marketId));
   }
 
   function withdrawCollected(uint _marketId) {
     msg.sender.transfer(getCollected(msg.sender, _marketId));
+  }
+
+  function percent(uint numerator, uint denominator, uint precision) public 
+  constant returns(uint quotient) {
+    // caution, check safe-to-multiply here
+    uint _numerator  = numerator * 10 ** (precision+1);
+    // with rounding of last digit
+    uint _quotient =  ((_numerator / denominator) + 5) / 10;
+    return ( _quotient);
   }
 }
 
