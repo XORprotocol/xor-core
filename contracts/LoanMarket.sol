@@ -259,10 +259,10 @@ contract LoanMarket {
           if (curValue < markets[_marketId].totalRequested) {
             uint newValue = curValue.add(markets[_marketId].lenderOffers[_address]);
             if (newValue > markets[_marketId].totalRequested) {
-              uint diff = markets[_marketId].totalRequested.sub(newValue);
+              uint diff = markets[_marketId].totalRequested.sub(curValue);
               offerValue = markets[_marketId].lenderOffers[_address].sub(diff);
             } else {
-              offerValue = markets[_marketId].lenderOffers[_address];
+              offerValue = 0;
             }
           }
           break;
