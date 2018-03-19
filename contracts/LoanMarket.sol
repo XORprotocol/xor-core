@@ -51,12 +51,12 @@ contract LoanMarket {
       );
   }
 
-  function getLender(uint _marketId, uint _lenderId) public view returns(address, uint, uint, uint, uint ,uint) {
+  function getLender(uint _marketId, uint _lenderId) public view returns(uint, uint, uint, uint, uint ,uint) {
     address lender = getLenderAddress(_marketId, _lenderId);
     uint marketPoolValue = marketPool(_marketId);
     uint actualOffer = actualLenderOffer(lender, _marketId);
     return (
-      lender, 
+      _lenderId, 
       getLenderOffer(_marketId, lender), 
       actualOffer, 
       getCollected(lender, _marketId), 
@@ -95,15 +95,22 @@ contract LoanMarket {
     }
   }
 
-  function getBorrower(uint _marketId, uint _borrowerId) public view returns(address, uint, uint ,uint ,uint ,uint) {
+  function getBorrower(uint _marketId, uint _borrowerId) public view returns(uint, uint, uint ,uint ,uint ,uint) {
     address borrower = markets[_marketId].borrowers[_borrowerId];
     uint borrowerRequest = markets[_marketId].borrowerRequests[borrower];
     uint actualBorrowerRequest = actualWithdrawRequested(_marketId, borrower);
     uint borrowerAmount = markets[_marketId].borrowerAmounts[borrower];
     uint borrowerRepaid = markets[_marketId].borrowerRepaid[borrower];
     uint marketPoolValue = marketPool(_marketId);
-    uint percentage = percent(borrowerRequest, marketPoolValue, 5);
-    return (borrower, borrowerRequest, actualBorrowerRequest, borrowerAmount, borrowerRepaid, percentage);
+    uint percentage = percent(actualBorrowerRequest, marketPoolValue, 5);
+    return (
+      _borrowerId,
+      borrowerRequest,
+      actualBorrowerRequest,
+      borrowerAmount,
+      borrowerRepaid,
+      percentage
+    );
   }
 
   function getBorrowerIndex(uint _marketId, address _borrowerAddress) public view returns (uint) {
@@ -252,7 +259,7 @@ contract LoanMarket {
           if (curValue < markets[_marketId].totalRequested) {
             uint newValue = curValue.add(markets[_marketId].lenderOffers[_address]);
             if (newValue > markets[_marketId].totalRequested) {
-              uint diff = markets[_marketId].totalRequested.sub(curValue);
+              uint diff = markets[_marketId].totalRequested.sub(newValue);
               offerValue = markets[_marketId].lenderOffers[_address].sub(diff);
             } else {
               offerValue = markets[_marketId].lenderOffers[_address];
