@@ -1,11 +1,12 @@
 pragma solidity ^0.4.18;
 
 // import "./libraries/PermissionsLib.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "./libraries/SafeMath.sol";
+import './zeppelin/lifecycle/Killable.sol';
 // import "zeppelin-solidity/contracts/ownership/Heritable.sol";
 // import "daostack-arc/contracts/VotingMachines/QuorumVote.sol";
 
-contract LoanMarket {
+contract LoanMarket is Killable {
   using SafeMath for uint;
   // using PermissionsLib for PermissionsLib.Permissions;
   Market[] public markets;
