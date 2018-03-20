@@ -12,10 +12,11 @@ module.exports = {
         },
         ropsten: {
             provider: function() {
-                return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/Q1BVKkEstxYHtF1ZLQqV")
+                return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/pjvC14Kn4cv47X3U8qLq")
             },
-            network_id: 3,
-            gas: 10000000000000
+            network_id: '*',
+            gas: 4712388,
+            gasPrice: 1000000
         }
     }
 };
