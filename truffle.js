@@ -1,4 +1,4 @@
-
+var HDWalletProvider = require("truffle-hdwallet-provider");
 var mnemonic = "gasp layer vote stick mystery motor kiss eye call ostrich hawk club";
 
 module.exports = {
@@ -13,9 +13,8 @@ module.exports = {
             provider: function() {
                 return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/pjvC14Kn4cv47X3U8qLq")
             },
-            network_id: '*',
-            gas: 4712388,
-            gasPrice: 1000000
+            network_id: 3,
+            gas: 4612388
         }
     }
 };
