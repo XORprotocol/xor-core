@@ -247,8 +247,7 @@ contract LoanMarket is Killable {
     uint request = actualWithdrawRequested(_marketId, msg.sender);
     require(request > 0);
     msg.sender.transfer(request);
-    markets[_marketId].borrowerAmounts[msg.sender].add(request);
-    markets[_marketId].curRepaid.add(request);
+    markets[_marketId].borrowerAmounts[msg.sender] = request;
   }
 
   function calculateExcess(uint _marketId, address _address) public view returns (uint) {
@@ -409,6 +408,7 @@ contract LoanMarket is Killable {
   }
 
   function withdrawCollected(uint _marketId) {
+    // require lending period over
     msg.sender.transfer(getCollected(msg.sender, _marketId));
   }
 
