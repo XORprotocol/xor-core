@@ -13,22 +13,21 @@ contract LoanMarket is Killable {
   
   struct Market {
     uint requestPeriod; // in blocks
-    uint votingPeriod; // in blocks
     uint loanPeriod; // in blocks
+    uint settlementPeriod; // in blocks
     uint totalLoaned;
     uint totalRequested;
     uint curBorrowed;
     uint curRepaid;
     uint initiationTimestamp; // time in blocks of first loan request or offer
-    uint riskRating; // as voted by lenders
-    uint interestConstant;
-    bytes32 state; // request, voting, lending, reconciliation
+    uint riskConstant; // Interest = riskOfBorrower * riskConstant
+    bytes32 state; // request, lending, settlement
     address[] lenders;
     address[] borrowers;
-    mapping (address => uint) lenderOffers;
+    mapping (address => uint) lenderOffers; 
     mapping (address => uint) borrowerRequests;
-    mapping (address => uint) lenderAmounts;
-    mapping (address => uint) borrowerAmounts;
+    mapping (address => uint) lenderCollected; // stores amount that each lender has collected back from loans
+    mapping (address => uint) borrowerWithdrawn; // stores amount that each borrower has withdrawn from their loan
     mapping (address => uint) borrowerRepaid;
   }
 
@@ -39,13 +38,14 @@ contract LoanMarket is Killable {
     Market memory curMarket = markets[_marketId];
     return (
       curMarket.requestPeriod,
-      curMarket.votingPeriod,
       curMarket.loanPeriod,
+      curMarket.settlementPeriod,
       curMarket.totalLoaned,
       curMarket.totalRequested,
+      curMarket.curBorrowed,
+      curMakret.curRepaid,
       curMarket.initiationTimestamp,
-      curMarket.riskRating,
-      curMarket.interestConstant,
+      curMarket.riskConstant,
       curMarket.state,
       curMarket.lenders,
       curMarket.borrowers
@@ -60,15 +60,15 @@ contract LoanMarket is Killable {
       _lenderId, 
       getLenderOffer(_marketId, lender), 
       actualOffer, 
-      getCollected(lender, _marketId), 
-      getLenderAmount(_marketId, lender), 
+      get(lender, _marketId), 
+      getLenderCollected(_marketId, lender), 
       percent(actualOffer, marketPoolValue, 5)
     );
   }
 
   function getLenderIndex(uint _marketId, address _lenderAddress) public view returns (uint) {
     uint index = 0;
-    for (uint i = 0; i < markets[_marketId].lenders.length; i++) {
+    for (uint i = 0; i < getLenderCount(_marketId); i++) {
       if (markets[_marketId].lenders[i] == _lenderAddress) {
         index = i;
       }
@@ -80,8 +80,8 @@ contract LoanMarket is Killable {
     return markets[_marketId].lenders.length;
   }
 
-  function getLenderAmount(uint _marketId, address _address) public view returns (uint) {
-    return markets[_marketId].lenderAmounts[_address];
+  function getLenderCollected(uint _marketId, address _address) public view returns (uint) {
+    return markets[_marketId].lenderCollected[_address];
   }
 
   function getLenderOffer(uint _marketId, address _address) public view returns (uint) {
@@ -99,8 +99,8 @@ contract LoanMarket is Killable {
   function getBorrower(uint _marketId, uint _borrowerId) public view returns(uint, uint, uint ,uint ,uint ,uint) {
     address borrower = markets[_marketId].borrowers[_borrowerId];
     uint borrowerRequest = markets[_marketId].borrowerRequests[borrower];
-    uint actualBorrowerRequest = actualWithdrawRequested(_marketId, borrower);
-    uint borrowerAmount = markets[_marketId].borrowerAmounts[borrower];
+    uint actualBorrowerRequest = actualBorrowerRequest(_marketId, borrower);
+    uint borrowerWithdrawn = markets[_marketId].borrowerWithdrawn[borrower];
     uint borrowerRepaid = markets[_marketId].borrowerRepaid[borrower];
     uint marketPoolValue = marketPool(_marketId);
     uint percentage = percent(actualBorrowerRequest, marketPoolValue, 5);
@@ -108,7 +108,7 @@ contract LoanMarket is Killable {
       _borrowerId,
       borrowerRequest,
       actualBorrowerRequest,
-      borrowerAmount,
+      borrowerWithdrawn,
       borrowerRepaid,
       percentage
     );
@@ -133,7 +133,7 @@ contract LoanMarket is Killable {
   }
 
   function getRequest(uint _marketId, address _address) public view returns (uint) {
-    return markets[_marketId].lenderOffers[_address];
+    return markets[_marketId].borrowerRequests[_address];
   }
 
   function getLenderAddress(uint _marketId, uint _lenderId) public view returns (address) {
@@ -173,11 +173,12 @@ contract LoanMarket is Killable {
 
   // TODO: getter for lenderAmt and borrowerAmt
   
-  function createMarket(uint _requestPeriod, uint _votingPeriod, uint _loanPeriod, uint _interestConstant) public returns (uint) {
+  function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant) public returns (uint) {
     address[] memory lenders;
     address[] memory borrowers;
-    markets.push(Market(_requestPeriod, _votingPeriod, _loanPeriod, 0, 0, 0, 0, block.number, 0, _interestConstant, "request", lenders, borrowers));
-    return markets.length;
+    markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, block.number, _riskConstant, "request", lenders, borrowers));
+    uint marketId = markets.length-1;
+    return marketId;
   }
 
   function offerLoan(uint _marketId) public payable {
@@ -187,9 +188,8 @@ contract LoanMarket is Killable {
     //   throw;
     // } else {
       curMarket.lenders.push(msg.sender);
-      curMarket.lenderAmounts[msg.sender] = msg.value;
       curMarket.lenderOffers[msg.sender] = msg.value;
-      curMarket.totalLoaned += msg.value;
+      curMarket.totalLoaned = curMarket.totalLoaned.add(msg.value);
     // }
   }
 
@@ -214,7 +214,7 @@ contract LoanMarket is Killable {
     }
   }
 
-  function actualWithdrawRequested(uint _marketId, address _address) public view returns(uint) {
+  function actualBorrowerRequest(uint _marketId, address _address) public view returns(uint) {
     Market storage curMarket = markets[_marketId];
     if (curMarket.totalLoaned >= curMarket.totalRequested) {
       return curMarket.borrowerRequests[_address];
@@ -243,11 +243,11 @@ contract LoanMarket is Killable {
   function withdrawRequested(uint _marketId) public {
     require(checkLoanPeriod(_marketId));
     require(markets[_marketId].borrowerRequests[msg.sender] > 0);
-    require(markets[_marketId].borrowerAmounts[msg.sender] == 0);
-    uint request = actualWithdrawRequested(_marketId, msg.sender);
+    require(markets[_marketId].borrowerWithdrawn[msg.sender] == 0);
+    uint request = actualBorrowerRequest(_marketId, msg.sender);
     require(request > 0);
     msg.sender.transfer(request);
-    markets[_marketId].borrowerAmounts[msg.sender] = request;
+    markets[_marketId].borrowerWithdrawn[msg.sender] = request;
   }
 
   function calculateExcess(uint _marketId, address _address) public view returns (uint) {
@@ -322,11 +322,6 @@ contract LoanMarket is Killable {
     return (requestPeriodEnd(_marketId) + markets[_marketId].loanPeriod);
   }
 
-  function vote(uint _marketId, uint choice) {
-    // require in correct Period
-    markets[_marketId].riskRating = choice;
-  }
-
   function log(uint x) public view returns (uint y){
     assembly {
       let arg := x
@@ -385,11 +380,11 @@ contract LoanMarket is Killable {
   }
 
   function getInterest(address _address, uint _amt, uint _marketId) public view returns (uint) {
-    return getRisk(_address, _amt).mul(markets[_marketId].interestConstant);
+    return getRisk(_address, _amt).mul(markets[_marketId].riskConstant);
   }
 
   function getRepayment(address _address, uint _marketId) public view returns (uint) {
-    uint request = actualWithdrawRequested(_marketId, _address);
+    uint request = actualBorrowerRequest(_marketId, _address);
     return request.add(getInterest(_address, request, _marketId));
   }
 
@@ -403,13 +398,13 @@ contract LoanMarket is Killable {
     return markets[_marketId].lenderOffers[_address].sub(calculateExcess(_marketId, _address));
   }
 
-  function getCollected(address _address, uint _marketId) public view returns (uint) {
+  function getLenderCollectible(address _address, uint _marketId) public view returns (uint) {
     return actualLenderOffer(_address, _marketId).mul(markets[_marketId].curRepaid).div(marketPool(_marketId));
   }
 
   function withdrawCollected(uint _marketId) {
     // require lending period over
-    msg.sender.transfer(getCollected(msg.sender, _marketId));
+    msg.sender.transfer(getLenderCollectible(msg.sender, _marketId));
   }
 
   function percent(uint numerator, uint denominator, uint precision) public 
