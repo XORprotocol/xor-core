@@ -1,8 +1,12 @@
 pragma solidity ^0.4.18;
 
 import './MarketInterest.sol';
+import './libraries/SafeMath.sol';
+import './libraries/XorMath.sol';
 
 contract MarketLend is MarketInterest {
+  using XorMath for uint;
+  using SafeMath for uint;
 
   function getLender(uint _marketId, address _lender) public view returns(uint, uint, uint, uint ,uint) {
     uint actualOffer = actualLenderOffer(_lender, _marketId);
@@ -11,7 +15,7 @@ contract MarketLend is MarketInterest {
       actualOffer, 
       getLenderCollected(_marketId, _lender), 
       getLenderCollectible(_lender, _marketId), 
-      percent(actualOffer, marketPool(_marketId), 5)
+      actualOffer.percent(marketPool(_marketId), 5)
     );
   }
 

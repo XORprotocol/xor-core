@@ -1,8 +1,10 @@
 pragma solidity ^0.4.18;
 
 import './MarketTime.sol';
+import './libraries/SafeMath.sol';
 
 contract MarketInterest is MarketTime {
+  using SafeMath for uint;
 
   function getTrustScore(address _address) public view returns (uint) {
     uint repaymentLength = repayments[_address].length;
@@ -10,7 +12,7 @@ contract MarketInterest is MarketTime {
     uint totalRepayments = 10;
     uint totalDefaults;
     for (uint x = 0; x < repaymentLength; x++) {
-      totalRepayments = totalRepayments.add(log(repayments[_address][x]));
+      totalRepayments = totalRepayments.add(repayments[_address][x].log());
     }
     for (uint y = 0; y < defaultLength; y++) {
       totalDefaults = totalDefaults.add(defaults[_address][y]);

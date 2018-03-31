@@ -1,8 +1,10 @@
 pragma solidity ^0.4.18;
 
-import './MarketCreation.sol';
+import './MarketIdentity.sol';
+import './libraries/XorMath.sol';
 
-contract MarketTime is MarketCreation {
+contract MarketTime is MarketIdentity {
+  using XorMath for uint;
 
   function checkRequestPeriod(uint _marketId) public returns (bool) {
     uint start = markets[_marketId].initiationTimestamp;

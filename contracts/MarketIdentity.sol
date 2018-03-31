@@ -4,4 +4,7 @@ import "./MarketBase.sol";
 
 contract MarketIdentity is MarketBase {
 
+  mapping (address => uint[]) repayments;
+  mapping (address => uint[]) defaults;
+  
 }
