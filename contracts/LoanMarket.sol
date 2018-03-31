@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // import "./libraries/PermissionsLib.sol";
-import "./SafeMath.sol";
+import "./libraries/SafeMath.sol";
 import './zeppelin/lifecycle/Killable.sol';
 // import "zeppelin-solidity/contracts/ownership/Heritable.sol";
 // import "daostack-arc/contracts/VotingMachines/QuorumVote.sol";
@@ -34,7 +34,24 @@ contract LoanMarket is Killable {
   mapping (address => uint[]) repayments;
   mapping (address => uint[]) defaults;
 
-  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,uint,uint,uint,bytes32,address[],address[]) {
+  function getMarket(uint _marketId)
+    public
+    view
+    returns(
+      uint,
+      uint,
+      uint,
+      uint,
+      uint,
+      uint,
+      uint,
+      uint,
+      uint,
+      bytes32,
+      address[],
+      address[]
+    ) 
+  {
     Market memory curMarket = markets[_marketId];
     return (
       curMarket.requestPeriod,
@@ -403,11 +420,12 @@ contract LoanMarket is Killable {
     msg.sender.transfer(getLenderCollectible(msg.sender, _marketId));
   }
 
-  function percent(uint numerator, uint denominator, uint precision) public pure returns(uint quotient) {
+  function percent(uint numerator, uint denominator, uint precision)
+  public pure returns(uint quotient) {
     // caution, check safe-to-multiply here
-    // uint _numerator  = numerator * 10 ** (precision+1);
+    uint _numerator  = numerator * 10 ** (precision+1);
     // with rounding of last digit
-    uint _quotient =  ((  (numerator * 10 ** (precision+1)) / denominator) + 5) / 10;
+    uint _quotient =  (( _numerator / denominator) + 5) / 10;
     return ( _quotient);
   }
 }
