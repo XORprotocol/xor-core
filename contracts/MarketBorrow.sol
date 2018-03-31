@@ -1,8 +1,12 @@
 pragma solidity ^0.4.18;
 
 import './MarketLend.sol';
+import './libraries/SafeMath.sol';
+import './libraries/XorMath.sol';
 
 contract MarketBorrow is MarketLend {
+  using XorMath for uint;
+  using SafeMath for uint;
 
   function getBorrower(uint _marketId, address _borrower) public view returns(uint, uint ,uint ,uint ,uint) {
     uint actualRequest = actualBorrowerRequest(_marketId, _borrower);
@@ -11,7 +15,7 @@ contract MarketBorrow is MarketLend {
       actualRequest,
       getBorrowerWithdrawn(_marketId, _borrower),
       getBorrowerRepaid(_marketId, _borrower),
-      percent(actualRequest, marketPool(_marketId), 5)
+      actualRequest.percent(marketPool(_marketId), 5)
     );
   }
 
@@ -69,5 +73,41 @@ contract MarketBorrow is MarketLend {
     Market storage curMarket = markets[_marketId];
     curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
     curMarket.borrowerRepaid[msg.sender] = msg.value;
+  }
+
+  function actualBorrowerRequest(uint _marketId, address _address) public view returns(uint) {
+    Market storage curMarket = markets[_marketId];
+    if (curMarket.totalLoaned >= curMarket.totalRequested) {
+      return curMarket.borrowerRequests[_address];
+    } else {
+      uint curValue = 0;
+      uint requestValue = 0;
+      for(uint i = 0; i < getBorrowerCount(_marketId); i++) {
+        if (curMarket.borrowers[i] == _address) {
+          if (curValue < curMarket.totalLoaned) {
+            uint newValue = curValue.add(curMarket.borrowerRequests[_address]);
+            if (newValue > curMarket.totalLoaned) {
+              uint diff = newValue.sub(curMarket.totalLoaned);
+              requestValue = curMarket.borrowerRequests[_address].sub(diff);
+            } else {
+              requestValue =  curMarket.borrowerRequests[_address];
+            }
+          }
+          break;
+        }
+        curValue = curValue.add(curMarket.borrowerRequests[curMarket.borrowers[i]]);
+      }
+      return requestValue;
+    }
+  }
+
+  function withdrawRequested(uint _marketId) public {
+    require(checkLoanPeriod(_marketId));
+    require(markets[_marketId].borrowerRequests[msg.sender] > 0);
+    require(markets[_marketId].borrowerWithdrawn[msg.sender] == 0);
+    uint request = actualBorrowerRequest(_marketId, msg.sender);
+    require(request > 0);
+    msg.sender.transfer(request);
+    markets[_marketId].borrowerWithdrawn[msg.sender] = request;
   }
 }

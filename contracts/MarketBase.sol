@@ -40,7 +40,7 @@ contract MarketBase {
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
       block.number, _riskConstant, "request", _lenders, _borrowers)) - 1;
     marketIndexToMaker[newId] = msg.sender;
-    emit NewMarket(newId);
+    NewMarket(newId);
     return newId;
   }
 
