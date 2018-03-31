@@ -41,7 +41,7 @@ contract MarketLend is MarketInterest {
     return markets[_marketId].lenderOffers[_address];
   }
 
-  modifier isLender(uint _marketId, address _address) public view returns (bool) {
+  function isLender(uint _marketId, address _address) public view returns (bool) {
     if (markets[_marketId].lenderOffers[_address] > 0) {
       return true;
     } else {
@@ -53,12 +53,7 @@ contract MarketLend is MarketInterest {
     return markets[_marketId].lenders[_lenderId];
   }
 
-  function offerLoan(uint _marketId)
-    public 
-    payable
-    isRequestPeriod(_marketId)
-    !isBorrower(_marketId, msg.sender)
-  {
+  function offerLoan(uint _marketId) public payable isRequestPeriod(_marketId) {
     Market storage curMarket = markets[_marketId];
     curMarket.lenders.push(msg.sender);
     curMarket.lenderOffers[msg.sender] = msg.value;
