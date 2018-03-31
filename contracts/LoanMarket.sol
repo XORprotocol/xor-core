@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // import "./libraries/PermissionsLib.sol";
-import "./libraries/SafeMath.sol";
+import "./SafeMath.sol";
 import './zeppelin/lifecycle/Killable.sol';
 // import "zeppelin-solidity/contracts/ownership/Heritable.sol";
 // import "daostack-arc/contracts/VotingMachines/QuorumVote.sol";
@@ -34,7 +34,7 @@ contract LoanMarket is Killable {
   mapping (address => uint[]) repayments;
   mapping (address => uint[]) defaults;
 
-  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,uint,uint,bytes32,address[],address[]) {
+  function getMarket(uint _marketId) public view returns(uint,uint,uint,uint,uint,uint,uint,uint,uint,bytes32,address[],address[]) {
     Market memory curMarket = markets[_marketId];
     return (
       curMarket.requestPeriod,
@@ -43,26 +43,23 @@ contract LoanMarket is Killable {
       curMarket.totalLoaned,
       curMarket.totalRequested,
       curMarket.curBorrowed,
-      curMakret.curRepaid,
+      curMarket.curRepaid,
       curMarket.initiationTimestamp,
       curMarket.riskConstant,
       curMarket.state,
       curMarket.lenders,
       curMarket.borrowers
-      );
+    );
   }
 
-  function getLender(uint _marketId, uint _lenderId) public view returns(uint, uint, uint, uint, uint ,uint) {
-    address lender = getLenderAddress(_marketId, _lenderId);
-    uint marketPoolValue = marketPool(_marketId);
-    uint actualOffer = actualLenderOffer(lender, _marketId);
+  function getLender(uint _marketId, address _lender) public view returns(uint, uint, uint, uint ,uint) {
+    uint actualOffer = actualLenderOffer(_lender, _marketId);
     return (
-      _lenderId, 
-      getLenderOffer(_marketId, lender), 
+      getLenderOffer(_marketId, _lender), 
       actualOffer, 
-      get(lender, _marketId), 
-      getLenderCollected(_marketId, lender), 
-      percent(actualOffer, marketPoolValue, 5)
+      getLenderCollected(_marketId, _lender), 
+      getLenderCollectible(_lender, _marketId), 
+      percent(actualOffer, marketPool(_marketId), 5)
     );
   }
 
@@ -96,21 +93,14 @@ contract LoanMarket is Killable {
     }
   }
 
-  function getBorrower(uint _marketId, uint _borrowerId) public view returns(uint, uint, uint ,uint ,uint ,uint) {
-    address borrower = markets[_marketId].borrowers[_borrowerId];
-    uint borrowerRequest = markets[_marketId].borrowerRequests[borrower];
-    uint actualBorrowerRequest = actualBorrowerRequest(_marketId, borrower);
-    uint borrowerWithdrawn = markets[_marketId].borrowerWithdrawn[borrower];
-    uint borrowerRepaid = markets[_marketId].borrowerRepaid[borrower];
-    uint marketPoolValue = marketPool(_marketId);
-    uint percentage = percent(actualBorrowerRequest, marketPoolValue, 5);
+  function getBorrower(uint _marketId, address _borrower) public view returns(uint, uint ,uint ,uint ,uint) {
+    uint actualRequest = actualBorrowerRequest(_marketId, _borrower);
     return (
-      _borrowerId,
-      borrowerRequest,
-      actualBorrowerRequest,
-      borrowerWithdrawn,
-      borrowerRepaid,
-      percentage
+      getBorrowerRequest(_marketId, _borrower),
+      actualRequest,
+      getBorrowerWithdrawn(_marketId, _borrower),
+      getBorrowerRepaid(_marketId, _borrower),
+      percent(actualRequest, marketPool(_marketId), 5)
     );
   }
 
@@ -132,12 +122,20 @@ contract LoanMarket is Killable {
     return markets[_marketId].borrowers[_borrowerId];
   }
 
-  function getRequest(uint _marketId, address _address) public view returns (uint) {
+  function getBorrowerRequest(uint _marketId, address _address) public view returns (uint) {
     return markets[_marketId].borrowerRequests[_address];
   }
 
   function getLenderAddress(uint _marketId, uint _lenderId) public view returns (address) {
     return markets[_marketId].lenders[_lenderId];
+  }
+
+  function getBorrowerWithdrawn(uint _marketId, address _borrower) public view returns (uint) {
+    return markets[_marketId].borrowerWithdrawn[_borrower];
+  }
+
+  function getBorrowerRepaid(uint _marketId, address _borrower) public view returns (uint) {
+    return markets[_marketId].borrowerRepaid[_borrower];
   }
 
   function getOffer(uint _marketId, address _address) public view returns (uint) {
@@ -156,7 +154,7 @@ contract LoanMarket is Killable {
     return markets.length;
   }
 
-  function getMarketByState(bytes32 _state) public view returns (uint[]) {
+  function getMarketByState(bytes32 _state) public returns (uint[]) {
     uint[] storage ids;
     for (uint i = 0; i < markets.length; i++) {
       if (markets[i].state == _state) {
@@ -207,10 +205,10 @@ contract LoanMarket is Killable {
 
   function marketPool(uint _marketId) public view returns (uint) {
     Market memory curMarket = markets[_marketId];
-    if (curMarket.totalLoaned >= curMarket.totalRequested) {
-      return curMarket.totalRequested;
+    if (markets[_marketId].totalLoaned >= markets[_marketId].totalRequested) {
+      return markets[_marketId].totalRequested;
     } else {
-      return curMarket.totalLoaned;
+      return markets[_marketId].totalLoaned;
     }
   }
 
@@ -253,23 +251,21 @@ contract LoanMarket is Killable {
   function calculateExcess(uint _marketId, address _address) public view returns (uint) {
     if (markets[_marketId].totalLoaned > markets[_marketId].totalRequested) {
       uint curValue = 0;
-      uint offerValue = 0;
       for (uint i = 0; i < getLenderCount(_marketId); i++) {
         if (markets[_marketId].lenders[i] == _address) {
           if (curValue < markets[_marketId].totalRequested) {
             uint newValue = curValue.add(markets[_marketId].lenderOffers[_address]);
             if (newValue > markets[_marketId].totalRequested) {
               uint diff = markets[_marketId].totalRequested.sub(curValue);
-              offerValue = markets[_marketId].lenderOffers[_address].sub(diff);
+              return markets[_marketId].lenderOffers[_address].sub(diff);
             } else {
-              offerValue = 0;
+              return 0;
             }
           }
           break;
         }
         curValue = curValue.add(markets[_marketId].lenderOffers[markets[_marketId].lenders[i]]);
       }
-      return offerValue;
     } else {
       return 0;
     }
@@ -402,17 +398,16 @@ contract LoanMarket is Killable {
     return actualLenderOffer(_address, _marketId).mul(markets[_marketId].curRepaid).div(marketPool(_marketId));
   }
 
-  function withdrawCollected(uint _marketId) {
+  function withdrawCollected(uint _marketId) public {
     // require lending period over
     msg.sender.transfer(getLenderCollectible(msg.sender, _marketId));
   }
 
-  function percent(uint numerator, uint denominator, uint precision) public 
-  constant returns(uint quotient) {
+  function percent(uint numerator, uint denominator, uint precision) public pure returns(uint quotient) {
     // caution, check safe-to-multiply here
-    uint _numerator  = numerator * 10 ** (precision+1);
+    // uint _numerator  = numerator * 10 ** (precision+1);
     // with rounding of last digit
-    uint _quotient =  ((_numerator / denominator) + 5) / 10;
+    uint _quotient =  ((  (numerator * 10 ** (precision+1)) / denominator) + 5) / 10;
     return ( _quotient);
   }
 }
