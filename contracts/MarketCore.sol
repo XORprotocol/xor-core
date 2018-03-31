@@ -7,21 +7,20 @@ contract MarketCore is MarketBorrow {
   function getMarket(uint _marketId)
     public
     view
-    returns(
-      uint,
-      uint,
-      uint,
-      uint,
-      uint,
-      uint,
-      uint,
-      uint,
-      uint,
-      bytes32,
-      address[],
-      address[]
-    ) 
-  {
+    returns
+  (
+    uint,
+    uint,
+    uint,
+    uint,
+    uint,
+    uint,
+    uint,
+    uint,
+    uint,
+    address[],
+    address[]
+  ) {
     Market memory curMarket = markets[_marketId];
     return (
       curMarket.requestPeriod,
@@ -33,7 +32,6 @@ contract MarketCore is MarketBorrow {
       curMarket.curRepaid,
       curMarket.initiationTimestamp,
       curMarket.riskConstant,
-      curMarket.state,
       curMarket.lenders,
       curMarket.borrowers
     );

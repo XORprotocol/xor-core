@@ -18,7 +18,6 @@ contract MarketBase {
     uint curRepaid; // amount repaid by borrowers at a given time
     uint initiationTimestamp; // time in blocks of first loan request or offer
     uint riskConstant; // Interest = riskOfBorrower * riskConstant
-    bytes32 state; // request, lending, settlement
     address[] lenders; // array of all lenders participating in the market
     address[] borrowers; // array of all borrowers participating in the market
     mapping (address => uint) lenderOffers; 
@@ -38,7 +37,7 @@ contract MarketBase {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
-      block.number, _riskConstant, "request", _lenders, _borrowers)) - 1;
+      block.number, _riskConstant, _lenders, _borrowers)) - 1;
     marketIndexToMaker[newId] = msg.sender;
     NewMarket(newId);
     return newId;

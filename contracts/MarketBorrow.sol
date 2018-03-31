@@ -51,22 +51,17 @@ contract MarketBorrow is MarketLend {
 
   function isBorrower(uint _marketId, address _address) public view returns (bool) {
     if (markets[_marketId].borrowerRequests[_address] > 0) {
-        return true;
+      return true;
     } else {
-        return false;
+      return false;
     }
   }
 
-  function requestLoan(uint _marketId, uint _amount) public {
+  function requestLoan(uint _marketId, uint _amount) public isRequestPeriod(_marketId) {
     Market storage curMarket = markets[_marketId];
-    require(curMarket.state == "request");
-    // if (!checkRequestPeriod(_marketId)) {
-    //   throw;
-    // } else {
-      curMarket.borrowers.push(msg.sender);
-      curMarket.borrowerRequests[msg.sender] = _amount;
-      curMarket.totalRequested = curMarket.totalRequested.add(_amount);
-    // }
+    curMarket.borrowers.push(msg.sender);
+    curMarket.borrowerRequests[msg.sender] = _amount;
+    curMarket.totalRequested = curMarket.totalRequested.add(_amount);
   }
 
   function repay(uint _marketId) public payable {

@@ -41,11 +41,11 @@ contract MarketLend is MarketInterest {
     return markets[_marketId].lenderOffers[_address];
   }
 
-  function isLender(uint _marketId, address _address) public view returns (bool) {
+  modifier isLender(uint _marketId, address _address) public view returns (bool) {
     if (markets[_marketId].lenderOffers[_address] > 0) {
-        return true;
+      return true;
     } else {
-        return false;
+      return false;
     }
   }
 
@@ -53,16 +53,16 @@ contract MarketLend is MarketInterest {
     return markets[_marketId].lenders[_lenderId];
   }
 
-  function offerLoan(uint _marketId) public payable {
+  function offerLoan(uint _marketId)
+    public 
+    payable
+    isRequestPeriod(_marketId)
+    !isBorrower(_marketId, msg.sender)
+  {
     Market storage curMarket = markets[_marketId];
-    require(curMarket.state == "request");
-    // if (!checkRequestPeriod(_marketId)) {
-    //   throw;
-    // } else {
-      curMarket.lenders.push(msg.sender);
-      curMarket.lenderOffers[msg.sender] = msg.value;
-      curMarket.totalLoaned = curMarket.totalLoaned.add(msg.value);
-    // }
+    curMarket.lenders.push(msg.sender);
+    curMarket.lenderOffers[msg.sender] = msg.value;
+    curMarket.totalLoaned = curMarket.totalLoaned.add(msg.value);
   }
 
   function calculateExcess(uint _marketId, address _address) public view returns (uint) {
