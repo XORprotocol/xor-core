@@ -15,7 +15,7 @@ contract MarketBorrow is MarketLend {
       actualRequest,
       getBorrowerWithdrawn(_marketId, _borrower),
       getBorrowerRepaid(_marketId, _borrower),
-      actualRequest.percent(marketPool(_marketId), 5)
+      actualRequest.percent(_marketPool(_marketId), 5)
     );
   }
 
@@ -68,6 +68,11 @@ contract MarketBorrow is MarketLend {
     Market storage curMarket = markets[_marketId];
     curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
     curMarket.borrowerRepaid[msg.sender] = msg.value;
+  }
+
+  function getRepayment(address _address, uint _marketId) public view returns (uint) {
+    uint request = actualBorrowerRequest(_marketId, _address);
+    return request.add(getInterest(_address, request, _marketId));
   }
 
   function actualBorrowerRequest(uint _marketId, address _address) public view returns(uint) {

@@ -36,4 +36,18 @@ contract MarketCore is MarketBorrow {
       curMarket.borrowers
     );
   }
+
+  function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant)
+    public
+  {
+    _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _riskConstant);
+  }
+
+  function marketPool(uint _marketId) public {
+    _marketPool(_marketId);
+  }
+
+  function getMarketCount() public view returns (uint) {
+    return markets.length;
+  }
 }

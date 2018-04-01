@@ -1,7 +1,9 @@
 pragma solidity ^0.4.18;
 
+import './zeppelin/lifecycle/Killable.sol';
+
 /// @title Base contract for CryptoKitties. Holds all common structs, events and base variables.
-contract MarketBase {
+contract MarketBase is Killable {
   /*** EVENTS ***/
   event NewMarket(uint marketId);
   /*** DATA TYPES ***/
@@ -33,7 +35,7 @@ contract MarketBase {
   /// @dev An internal method that creates a new market and stores it. This
   ///  method doesn't do any checking and should only be called when the
   ///  input data is known to be valid
-  function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant) internal returns (uint) {
+  function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
@@ -43,7 +45,7 @@ contract MarketBase {
     return newId;
   }
 
-  function marketPool(uint _marketId) internal view returns (uint) {
+  function _marketPool(uint _marketId) internal view returns (uint) {
     Market memory curMarket = markets[_marketId];
     if (curMarket.totalLoaned >= curMarket.totalRequested) {
       return curMarket.totalRequested;
