@@ -43,8 +43,8 @@ contract MarketCore is MarketBorrow {
     _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _riskConstant);
   }
 
-  function marketPool(uint _marketId) public {
-    _marketPool(_marketId);
+  function marketPool(uint _marketId) public view returns (uint) {
+    return _marketPool(_marketId);
   }
 
   function getMarketCount() public view returns (uint) {

@@ -49,22 +49,63 @@ contract MarketBorrow is MarketLend {
     return markets[_marketId].borrowerRepaid[_borrower];
   }
 
-  function isBorrower(uint _marketId, address _address) public view returns (bool) {
-    if (markets[_marketId].borrowerRequests[_address] > 0) {
+  function borrower(uint _marketId, address _address) public view returns (bool) {
+    if (actualBorrowerRequest(_marketId, _address) > 0) {
       return true;
     } else {
       return false;
     }
   }
 
-  function requestLoan(uint _marketId, uint _amount) public isRequestPeriod(_marketId) {
+  modifier isBorrower(uint _marketId, address _address) {
+    require(borrower(_marketId, _address));
+    _;
+  }
+
+  modifier isNotBorrower(uint _marketId, address _address) {
+    require (!borrower(_marketId, _address));
+    _;
+  }
+
+  function repaid(uint _marketId, address _address) public view returns (bool) {
+    Market storage curMarket = markets[_marketId];
+    uint actualRequest = actualBorrowerRequest(_marketId, _address);
+    uint expectedRepayment = actualRequest.add(getInterest(_address, actualRequest, _marketId));
+    if (curMarket.borrowerRepaid[msg.sender] == expectedRepayment) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  modifier hasRepaid(uint _marketId, address _address) {
+    require(repaid(_marketId, _address));
+    _;
+  }
+
+  modifier hasNotRepaid(uint _marketId, address _address) {
+    require(!repaid(_marketId, _address));
+    _;
+  }
+
+  function requestLoan(uint _marketId, uint _amount)
+    public
+    isRequestPeriod(_marketId)
+    isNotBorrower(_marketId, msg.sender)
+  {
     Market storage curMarket = markets[_marketId];
     curMarket.borrowers.push(msg.sender);
     curMarket.borrowerRequests[msg.sender] = _amount;
     curMarket.totalRequested = curMarket.totalRequested.add(_amount);
   }
 
-  function repay(uint _marketId) public payable {
+  function repay(uint _marketId)
+    public
+    payable
+    isSettlementPeriod(_marketId)
+    isBorrower(_marketId, msg.sender)
+    hasNotRepaid(_marketId, msg.sender)
+  {
     Market storage curMarket = markets[_marketId];
     curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
     curMarket.borrowerRepaid[msg.sender] = msg.value;
@@ -101,13 +142,34 @@ contract MarketBorrow is MarketLend {
     }
   }
 
-  function withdrawRequested(uint _marketId) public {
-    require(checkLoanPeriod(_marketId));
-    require(markets[_marketId].borrowerRequests[msg.sender] > 0);
-    require(markets[_marketId].borrowerWithdrawn[msg.sender] == 0);
+  function withdrawn(uint _marketId, address _address) public view returns(bool) {
+    if (getBorrowerRequest(_marketId, _address) == getBorrowerWithdrawn(_marketId, _address)
+      && getBorrowerWithdrawn(_marketId, _address) > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  modifier hasWithdrawn(uint _marketId, address _address) {
+    require(withdrawn(_marketId, _address));
+    _;
+  }
+
+  modifier hasNotWithdrawn(uint _marketId, address _address) {
+    require(!withdrawn(_marketId, _address));
+    _;
+  }
+
+  function withdrawRequested(uint _marketId)
+    public
+    isLoanPeriod(_marketId)
+    isBorrower(_marketId, msg.sender)
+    hasNotWithdrawn(_marketId, msg.sender)
+  {
     uint request = actualBorrowerRequest(_marketId, msg.sender);
-    require(request > 0);
     msg.sender.transfer(request);
     markets[_marketId].borrowerWithdrawn[msg.sender] = request;
+    markets[_marketId].curBorrowed = markets[_marketId].curBorrowed.add(request);
   }
 }

@@ -54,6 +54,7 @@
     "bignumber.js": "^5.0.0",
     "bootstrap": "^4.0.0",
     "daostack-arc": "^0.0.0-alpha.28",
+    "dateformat": "^3.0.3",
     "dotenv": "2.0.0",
     "ganache-cli": "^6.0.3",
     "react": "^15.4.2",
