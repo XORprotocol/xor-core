@@ -15,8 +15,8 @@ contract MarketTime is MarketIdentity {
   using SafeMath for uint;
 
   /** 
-   @dev Returns true if market is currently in Request Period, false otherwise
-  */
+   * @dev Returns true if market is currently in Request Period, false otherwise
+   */
   function checkRequestPeriod(uint _marketId) public view returns (bool) {
     uint start = markets[_marketId].initiationTimestamp;
     uint end = requestPeriodEnd(_marketId);
@@ -28,8 +28,8 @@ contract MarketTime is MarketIdentity {
   }
 
   /** 
-   @dev Returns true if market is currently in Loan Period, false otherwise
-  */
+   * @dev Returns true if market is currently in Loan Period, false otherwise
+   */
   function checkLoanPeriod(uint _marketId) public view returns (bool) {
     uint start = requestPeriodEnd(_marketId);
     uint end = lendingPeriodEnd(_marketId);
@@ -41,8 +41,8 @@ contract MarketTime is MarketIdentity {
   }
 
   /** 
-   @dev Returns true if market is currently in Settlement Period, false otherwise
-  */
+   * @dev Returns true if market is currently in Settlement Period, false otherwise
+   */
   function checkSettlementPeriod(uint _marketId) public view returns (bool) {
     uint start = lendingPeriodEnd(_marketId);
     uint end = settlementPeriodEnd(_marketId);
@@ -54,8 +54,8 @@ contract MarketTime is MarketIdentity {
   }
 
   /** 
-   @dev Returns true if market is currently in Collection Period, false otherwise
-  */
+   * @dev Returns true if market is currently in Collection Period, false otherwise
+   */
   function checkCollectionPeriod(uint _marketId) public view returns (bool) {
     uint start = settlementPeriodEnd(_marketId);
     if (block.timestamp >= start) {
@@ -66,29 +66,29 @@ contract MarketTime is MarketIdentity {
   }
 
   /** 
-   @dev Computes time (in Unix Epoch Time) at which Request Period for market ends
-  */
+   * @dev Computes time (in Unix Epoch Time) at which Request Period for market ends
+   */
   function requestPeriodEnd(uint _marketId) private view returns (uint) {
     return markets[_marketId].initiationTimestamp.add(markets[_marketId].requestPeriod);
   }
 
   /** 
-   @dev Computes time (in Unix Epoch Time) at which Lending Period for market ends
-  */
+   * @dev Computes time (in Unix Epoch Time) at which Lending Period for market ends
+   */
   function lendingPeriodEnd(uint _marketId) private view returns (uint) {
     return requestPeriodEnd(_marketId).add(markets[_marketId].loanPeriod);
   }
 
   /** 
-   @dev Computes time (in Unix Epoch Time) at which Request Period for market ends
-  */
+   * @dev Computes time (in Unix Epoch Time) at which Request Period for market ends
+   */
   function settlementPeriodEnd(uint _marketId) private view returns (uint) {
     return lendingPeriodEnd(_marketId).add(markets[_marketId].settlementPeriod);
   }
 
   /** 
-   @dev Fectches the current period of the market
-  */
+   * @dev Fectches the current period of the market
+   */
   function getMarketPeriod(uint _marketId) public view returns (bytes32) {
     if (checkRequestPeriod(_marketId)) {
       return "request";
@@ -102,7 +102,7 @@ contract MarketTime is MarketIdentity {
   }
 
   /**  
-   @dev Throws if market is not currently in "Request Period"
+   * @dev Throws if market is not currently in "Request Period"
    */
   modifier isRequestPeriod(uint _marketId) {
     require(checkRequestPeriod(_marketId));
@@ -110,7 +110,7 @@ contract MarketTime is MarketIdentity {
   }
 
   /** 
-   @dev Throws if market is not currently in "Loan Period"
+   * @dev Throws if market is not currently in "Loan Period"
    */
   modifier isLoanPeriod(uint _marketId) {
     require(checkLoanPeriod(_marketId));
@@ -118,7 +118,7 @@ contract MarketTime is MarketIdentity {
   }
 
   /**
-   @dev Throws if market is not currently in "Settlement Period"
+   * @dev Throws if market is not currently in "Settlement Period"
    */
   modifier isSettlementPeriod(uint _marketId) {
     require(checkSettlementPeriod(_marketId));
@@ -126,7 +126,7 @@ contract MarketTime is MarketIdentity {
   }
 
   /**
-   @dev Throws if market is not currently in "Collection Period"
+   * @dev Throws if market is not currently in "Collection Period"
    */
   modifier isCollectionPeriod(uint _marketId) {
     require(checkCollectionPeriod(_marketId));

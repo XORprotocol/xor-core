@@ -9,6 +9,9 @@ import './zeppelin/lifecycle/Killable.sol';
 
 contract MarketBase is Killable {
   /*** EVENTS ***/
+  /**
+   * @dev Triggered when a new market has been created.
+   */
   event NewMarket(uint marketId);
   
   /*** DATA TYPES ***/
@@ -62,6 +65,9 @@ contract MarketBase is Killable {
     mapping (address => uint) borrowerRequests;
     
     // Mapping of each lender to amount that they have collected back from loans (in Wei)
+    // NOTE: Currently, since lenders must collect their entire collectible amount
+    //       at once, we need not store the uint amount, could just store a boolean
+    //       indicating whether they've collected
     mapping (address => uint) lenderCollected; 
     
     // Mapping of each borrower to amount they have withdrawn from their loan (in Wei)
@@ -73,20 +79,20 @@ contract MarketBase is Killable {
 
   /*** STORAGE ***/
   /**
-   @dev An array containing all markets in existence. The marketID is
+   * @dev An array containing all markets in existence. The marketID is
    an index in this array.
    */
   Market[] public markets;
   
   /**
-   @dev A mapping from market ID to the address that created them. 
+   * @dev A mapping from market ID to the address that created them. 
    */
   mapping (uint256 => address) public marketIndexToMaker;
 
   /** 
-   @dev An internal method that creates a new market and stores it. This
-   method doesn't do any checking and should only be called when the
-   nput data is known to be valid
+   * @dev An internal method that creates a new market and stores it. This
+     method doesn't do any checking and should only be called when the
+     nput data is known to be valid
   */
   function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant) internal returns (uint) {
     address[] memory _lenders;
@@ -100,9 +106,9 @@ contract MarketBase is Killable {
 
   /*** OTHER FUNCTIONS ***/
   /**
-   @dev An internal method that determines the size of the marketPool actually
-   available for loans. Takes the minimum of total amount requested by borrowers 
-   and total amount offered by lenders
+   * @dev An internal method that determines the size of the marketPool actually
+     available for loans. Takes the minimum of total amount requested by borrowers 
+     and total amount offered by lenders
    */
   function _marketPool(uint _marketId) internal view returns (uint) {
     Market memory curMarket = markets[_marketId];
