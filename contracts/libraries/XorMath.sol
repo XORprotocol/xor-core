@@ -1,11 +1,11 @@
 pragma solidity ^0.4.18;
 
+import './SafeMath.sol';
+
 /**
  * @title XorMath
  * @dev Math operations specific to XOR protocol
  */
-
-import './SafeMath.sol';
 
 library XorMath {
   using SafeMath for uint256;
