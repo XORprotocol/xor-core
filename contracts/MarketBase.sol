@@ -23,6 +23,10 @@ contract MarketBase is Killable {
     // Duration of "Settlement Period" during which borrowers repay lenders
     uint settlementPeriod; 
     
+    // @notice Reason "Collection Period" is not a field is because it is infinite
+    //         by default. Lenders have an unlimited time period within which
+    //         they can collect repayments and interest
+
     // Size of lending pool put forward by lenders in market (in Gwei)
     uint totalLoaned; 
     
@@ -68,16 +72,22 @@ contract MarketBase is Killable {
   }
 
   /*** STORAGE ***/
-  // @dev An array containing all markets in existence. The ID of each market is
-  // an index in this array
+  /**
+   @dev An array containing all markets in existence. The marketID is
+   an index in this array.
+   */
   Market[] public markets;
   
-  /// @dev A mapping from market ID to the address that created them. 
+  /**
+   @dev A mapping from market ID to the address that created them. 
+   */
   mapping (uint256 => address) public marketIndexToMaker;
 
-  /// @dev An internal method that creates a new market and stores it. This
-  ///  method doesn't do any checking and should only be called when the
-  ///  input data is known to be valid
+  /** 
+   @dev An internal method that creates a new market and stores it. This
+   method doesn't do any checking and should only be called when the
+   nput data is known to be valid
+  */
   function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
@@ -89,9 +99,11 @@ contract MarketBase is Killable {
   }
 
   /*** OTHER FUNCTIONS ***/
-  /// @dev An internal method that determines the size of the marketPool actually
-  /// available for loans. Takes the minimum of total amount requested by borrowers 
-  /// and total amount offered by lenders   
+  /**
+   @dev An internal method that determines the size of the marketPool actually
+   available for loans. Takes the minimum of total amount requested by borrowers 
+   and total amount offered by lenders
+   */
   function _marketPool(uint _marketId) internal view returns (uint) {
     Market memory curMarket = markets[_marketId];
     if (curMarket.totalLoaned >= curMarket.totalRequested) {
