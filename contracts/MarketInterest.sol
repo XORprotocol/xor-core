@@ -12,7 +12,7 @@ contract MarketInterest is MarketTime {
     uint totalRepayments = 10;
     uint totalDefaults;
     for (uint x = 0; x < repaymentLength; x++) {
-      totalRepayments = totalRepayments.add(repayments[_address][x].log());
+      totalRepayments = totalRepayments.add(repayments[_address][x].log2());
     }
     for (uint y = 0; y < defaultLength; y++) {
       totalDefaults = totalDefaults.add(defaults[_address][y]);

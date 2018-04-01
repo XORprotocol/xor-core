@@ -1,14 +1,19 @@
 pragma solidity ^0.4.18;
 
-import './SafeMath.sol';
-
 /**
  * @title XorMath
  * @dev Math operations specific to XOR protocol
  */
+
+import './SafeMath.sol';
+
 library XorMath {
   using SafeMath for uint256;
 
+  /** @dev Returns quotient (numerator/denominator) in percentage form to a certain degree of precision
+      Ex: numerator: 101,450, denominator: 3, precision: 3, result: 224, i.e. 22.4%
+   https://ethereum.stackexchange.com/questions/18870/is-there-a-good-way-to-calculate-a-ratio-in-solidity-since-there-is-no-float-do
+   */
   function percent(uint256 numerator, uint256 denominator, uint256 precision)
   internal pure returns(uint256 quotient) {
     // caution, check safe-to-multiply here
@@ -18,7 +23,10 @@ library XorMath {
     return ( _quotient);
   }
 
-  function log(uint256 x) internal pure returns (uint256 y){
+  /** @dev Returns ceiling of log base 2 of x
+   https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity
+   */
+  function log2(uint256 x) internal pure returns (uint256 y){
     assembly {
       let arg := x
       x := sub(x,1)

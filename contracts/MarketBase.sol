@@ -2,33 +2,76 @@ pragma solidity ^0.4.18;
 
 import './zeppelin/lifecycle/Killable.sol';
 
-/// @title Base contract for CryptoKitties. Holds all common structs, events and base variables.
+/**
+  * @title MarketBase
+  * @dev Base contract for XOR Markets. Holds all common structs, events and base variables
+ */
+
 contract MarketBase is Killable {
   /*** EVENTS ***/
   event NewMarket(uint marketId);
-  /*** DATA TYPES ***/
-  // An array containing all markets on XOR protocol
-  Market[] public markets;
   
+  /*** DATA TYPES ***/
   struct Market {
-    uint requestPeriod; // in blocks
-    uint loanPeriod; // in blocks
-    uint settlementPeriod; // in blocks
-    uint totalLoaned; // size of lending pool put forward by lenders 
-    uint totalRequested; // value of total amount requested by borrowers
-    uint curBorrowed; // amount taken out by borrowers at a given time
-    uint curRepaid; // amount repaid by borrowers at a given time
-    uint initiationTimestamp; // time in blocks of first loan request or offer
-    uint riskConstant; // Interest = riskOfBorrower * riskConstant
-    address[] lenders; // array of all lenders participating in the market
-    address[] borrowers; // array of all borrowers participating in the market
+    // Duration of "Request Period" during which borrowers submit loan requests 
+    // and lenders offer loans measured in blocks
+    uint requestPeriod;
+    
+    // Duration of "Loan Period" during which the loan is actually taken out
+    uint loanPeriod;
+    
+    // Duration of "Settlement Period" during which borrowers repay lenders
+    uint settlementPeriod; 
+    
+    // Size of lending pool put forward by lenders in market (in Gwei)
+    uint totalLoaned; 
+    
+    // Value of total amount requested by borrowers in market (in Gwei)
+    uint totalRequested; 
+    
+    // Amount taken out by borrowers on loan at a given time (in Gwei)
+    uint curBorrowed; 
+    
+    // Amount repaid by borrowers at a given time (in Gwei)
+    uint curRepaid; 
+    
+    // Time in Linux Epoch Time of market creation
+    uint initiationTimestamp; 
+    
+    // Risk Coefficient is a coefficient multiplier that is multiplied with
+    // the Risk Rating of each borrower to calculate their Interest Payment for
+    // current loan (in Gwei)
+    uint riskConstant; 
+    
+    // Array of all lenders participating in the market
+    address[] lenders; 
+    
+    // Array of all borrowers participating in the market
+    address[] borrowers; 
+    
+    // Mapping of each lender (their address) to the size of their loan offer
+    // (in Gwei); amount put forward by each lender
     mapping (address => uint) lenderOffers; 
+    
+    // Mapping of each borrower (their address) to the size of their loan request
+    // (in Gwei)
     mapping (address => uint) borrowerRequests;
-    mapping (address => uint) lenderCollected; // stores amount that each lender has collected back from loans
-    mapping (address => uint) borrowerWithdrawn; // stores amount that each borrower has withdrawn from their loan
+    
+    // Mapping of each lender to amount that they have collected back from loans (in Gwei)
+    mapping (address => uint) lenderCollected; 
+    
+    // Mapping of each borrower to amount they have withdrawn from their loan (in Gwei)
+    mapping (address => uint) borrowerWithdrawn; 
+    
+    // Mapping of each borrower to amount of loan they have repaid (in Gwei)
     mapping (address => uint) borrowerRepaid;
   }
 
+  /*** STORAGE ***/
+  // @dev An array containing all markets in existence. The ID of each market is
+  // an index in this array
+  Market[] public markets;
+  
   /// @dev A mapping from market ID to the address that created them. 
   mapping (uint256 => address) public marketIndexToMaker;
 
@@ -45,6 +88,10 @@ contract MarketBase is Killable {
     return newId;
   }
 
+  /*** OTHER FUNCTIONS ***/
+  /// @dev An internal method that determines the size of the marketPool actually
+  /// available for loans. Takes the minimum of total amount requested by borrowers 
+  /// and total amount offered by lenders   
   function _marketPool(uint _marketId) internal view returns (uint) {
     Market memory curMarket = markets[_marketId];
     if (curMarket.totalLoaned >= curMarket.totalRequested) {
