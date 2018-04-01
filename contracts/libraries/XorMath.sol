@@ -59,4 +59,17 @@ library XorMath {
       y := add(y, mul(256, gt(arg, 0x8000000000000000000000000000000000000000000000000000000000000000)))
     }
   }
+
+  /**
+  @dev Returns square root of x
+  https://ethereum.stackexchange.com/questions/2910/can-i-square-root-in-solidity
+  */
+  function sqrt(uint x) internal pure returns (uint y) {
+    uint z = (x + 1) / 2;
+    y = x;
+    while (z < y) {
+        y = z;
+        z = (x / z + z) / 2;
+    }
+  }
 }
