@@ -10,7 +10,6 @@ import './libraries/SafeMath.sol';
           ie. Request, Loan, Settlement, Collection
  */
 
-
 contract MarketTime is MarketIdentity {
   using XorMath for uint;
   using SafeMath for uint;

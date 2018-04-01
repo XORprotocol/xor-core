@@ -27,16 +27,16 @@ contract MarketBase is Killable {
     //         by default. Lenders have an unlimited time period within which
     //         they can collect repayments and interest
 
-    // Size of lending pool put forward by lenders in market (in Gwei)
+    // Size of lending pool put forward by lenders in market (in Wei)
     uint totalLoaned; 
     
-    // Value of total amount requested by borrowers in market (in Gwei)
+    // Value of total amount requested by borrowers in market (in Wei)
     uint totalRequested; 
     
-    // Amount taken out by borrowers on loan at a given time (in Gwei)
+    // Amount taken out by borrowers on loan at a given time (in Wei)
     uint curBorrowed; 
     
-    // Amount repaid by borrowers at a given time (in Gwei)
+    // Amount repaid by borrowers at a given time (in Wei)
     uint curRepaid; 
     
     // Time in Linux Epoch Time of market creation
@@ -44,7 +44,7 @@ contract MarketBase is Killable {
     
     // Risk Coefficient is a coefficient multiplier that is multiplied with
     // the Risk Rating of each borrower to calculate their Interest Payment for
-    // current loan (in Gwei)
+    // current loan (in Wei)
     uint riskConstant; 
     
     // Array of all lenders participating in the market
@@ -54,20 +54,20 @@ contract MarketBase is Killable {
     address[] borrowers; 
     
     // Mapping of each lender (their address) to the size of their loan offer
-    // (in Gwei); amount put forward by each lender
+    // (in Wei); amount put forward by each lender
     mapping (address => uint) lenderOffers; 
     
     // Mapping of each borrower (their address) to the size of their loan request
-    // (in Gwei)
+    // (in Wei)
     mapping (address => uint) borrowerRequests;
     
-    // Mapping of each lender to amount that they have collected back from loans (in Gwei)
+    // Mapping of each lender to amount that they have collected back from loans (in Wei)
     mapping (address => uint) lenderCollected; 
     
-    // Mapping of each borrower to amount they have withdrawn from their loan (in Gwei)
+    // Mapping of each borrower to amount they have withdrawn from their loan (in Wei)
     mapping (address => uint) borrowerWithdrawn; 
     
-    // Mapping of each borrower to amount of loan they have repaid (in Gwei)
+    // Mapping of each borrower to amount of loan they have repaid (in Wei)
     mapping (address => uint) borrowerRepaid;
   }
 
