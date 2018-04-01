@@ -31,7 +31,7 @@ contract MarketTime is MarketIdentity {
   function checkSettlementPeriod(uint _marketId) public view returns (bool) {
     uint start = lendingPeriodEnd(_marketId);
     uint end = settlementPeriodEnd(_marketId);
-    if (block.number >= start) {
+    if (block.number >= start && block.number <= end) {
       return true;
     } else {
       return false;
@@ -48,6 +48,18 @@ contract MarketTime is MarketIdentity {
 
   function settlementPeriodEnd(uint _marketId) private view returns (uint) {
     return lendingPeriodEnd(_marketId).add(markets[_marketId].settlementPeriod);
+  }
+
+  function getMarketPeriod(uint _marketId) public view returns (bytes32) {
+    if (checkRequestPeriod(_marketId)) {
+      return "request";
+    } else if (checkLoanPeriod(_marketId)) {
+      return "loan";
+    } else if (checkSettlementPeriod(_marketId)) {
+      return "settlement";
+    } else {
+      return "collect";
+    }
   }
 
   modifier isRequestPeriod(uint _marketId) {

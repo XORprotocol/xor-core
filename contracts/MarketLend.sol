@@ -15,7 +15,7 @@ contract MarketLend is MarketInterest {
       actualOffer, 
       getLenderCollected(_marketId, _lender), 
       getLenderCollectible(_lender, _marketId), 
-      actualOffer.percent(marketPool(_marketId), 5)
+      actualOffer.percent(_marketPool(_marketId), 5)
     );
   }
 
@@ -95,7 +95,7 @@ contract MarketLend is MarketInterest {
   }
 
   function getLenderCollectible(address _address, uint _marketId) public view returns (uint) {
-    return actualLenderOffer(_address, _marketId).mul(markets[_marketId].curRepaid).div(marketPool(_marketId));
+    return actualLenderOffer(_address, _marketId).mul(markets[_marketId].curRepaid).div(_marketPool(_marketId));
   }
 
   function withdrawCollected(uint _marketId) public {
