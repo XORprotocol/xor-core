@@ -82,7 +82,7 @@ contract MarketBase is Killable {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
-      block.number, _riskConstant, _lenders, _borrowers)) - 1;
+      block.timestamp, _riskConstant, _lenders, _borrowers)) - 1;
     marketIndexToMaker[newId] = msg.sender;
     NewMarket(newId);
     return newId;
