@@ -21,7 +21,7 @@ library XorMath {
     // caution, check safe-to-multiply here
     uint256 _numerator  = numerator * 10 ** (precision+1);
     // with rounding of last digit
-    uint256 _quotient =  (( _numerator / denominator) + 5) / 10;
+    uint256 _quotient =  (( _numerator.div(denominator)) + 5) / 10;
     return ( _quotient);
   }
 
