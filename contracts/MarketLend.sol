@@ -204,15 +204,12 @@ contract MarketLend is MarketInterest {
    * @dev Transfers collectible amount (interest + principal - defaults) to respective 
    *      lender
    */
-  function collectCollectible(uint _marketId)
-    public
-    isCollectionPeriod(_marketId)
-    isLender(_marketId, msg.sender)
-    hasNotCollected(_marketId, msg.sender)
-  {
+  function collectCollectible(uint _marketId) public 
+  isCollectionPeriod(_marketId) isLender(_marketId, msg.sender)
+  hasNotCollected(_marketId, msg.sender) {
     uint collectibleAmt = getLenderCollectible(msg.sender, _marketId);
-    msg.sender.transfer(collectibleAmt);
     markets[_marketId].lenderCollected[msg.sender] = collectibleAmt;
+    msg.sender.transfer(collectibleAmt);
     CollectibleCollected(_marketId, msg.sender, collectibleAmt);
   }
   
