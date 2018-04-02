@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
 import './MarketInterest.sol';
-import './libraries/SafeMath.sol';
-import './libraries/XorMath.sol';
 
 /**
   * @title MarketLend
@@ -31,10 +29,11 @@ contract MarketLend is MarketInterest {
     
   /*** GETTERS ***/    
   /**
-   * @dev Fetches all relevant information about a lender in a particular Market
+   * @dev Fetches all relevant information about a lender in a particular Market.
    *      Utilizes various getter functions written below
    */
-  function getLender(uint _marketId, address _lender) public view returns(uint, uint, uint, uint, uint) {
+  function getLender(uint _marketId, address _lender) public view 
+  returns(uint, uint, uint, uint, uint) {
     uint actualOffer = actualLenderOffer(_lender, _marketId);
     return (
       getLenderOffer(_marketId, _lender), 
@@ -47,15 +46,48 @@ contract MarketLend is MarketInterest {
 
   /**
    * @dev Retrieves the amount (in Wei) that a lender has offered/deposited into
-   *      the market
+   *      the market.
+   *      Called before Request Period is complete.
    */
   function getLenderOffer(uint _marketId, address _address) public view returns (uint) {
     return markets[_marketId].lenderOffers[_address];
   }
 
   /**
+   * @dev Calculates any excess lender funds that are not part of the market
+   *      pool (when total amount offered > total amount requested)
+   */
+  function calculateExcess(uint _marketId, address _address) private view returns (uint) {
+    if (markets[_marketId].totalLoaned > markets[_marketId].totalRequested) {
+      uint curValue = 0;
+      for (uint i = 0; i < getLenderCount(_marketId); i++) {
+        if (markets[_marketId].lenders[i] == _address) {
+          if (curValue <= markets[_marketId].totalRequested) {
+            uint newValue = curValue.add(markets[_marketId].lenderOffers[_address]);
+            if (newValue > markets[_marketId].totalRequested) {
+              uint diff = markets[_marketId].totalRequested.sub(curValue);
+              return markets[_marketId].lenderOffers[_address].sub(diff);
+            } else {
+              return 0;
+            }
+          }
+          break;
+        }
+        curValue = curValue.add(markets[_marketId].lenderOffers[markets[_marketId].lenders[i]]);
+      }
+    } else {
+      return 0;
+    }
+  }
+  
+  /**
    * @dev Retrieves the "actual" size of loan offer corresponding to particular
    *      lender (after excess has been removed)
+   * @notice This value would only differ from return value of getLenderOffer()
+   *         for the same lender if total amount offered > total amount 
+   *         requested and the lender is near the end of the queue
+   * @notice This value should only differ from return value of getLenderOffer() for 
+   *         ONE lender in a Market instance
    */ 
   function actualLenderOffer(address _address, uint _marketId) public view returns (uint) {
     return markets[_marketId].lenderOffers[_address].sub(calculateExcess(_marketId, _address));
@@ -100,8 +132,15 @@ contract MarketLend is MarketInterest {
   }
 
   /**
-   * @dev Checks if given individual is a lender (after request period concludes 
-   *      and excess lenders are removed)
+   * @dev Retrieves address of a lender from their lenderID in market
+   */
+  function getLenderAddress(uint _marketId, uint _lenderId) public view returns (address) {
+    return markets[_marketId].lenders[_lenderId];
+  }
+  
+  /**
+   * @dev Returns true if given individual is a lender (after request period concludes 
+   *      and excess lenders are removed), false otherwise
    */
   function lender(uint _marketId, address _address) public view returns (bool) {
     if ((checkRequestPeriod(_marketId) && getLenderOffer(_marketId, _address) > 0) ||
@@ -113,10 +152,16 @@ contract MarketLend is MarketInterest {
   }
 
   /**
-   * @dev Retrieves address of a lender from their lenderID in market
+   * @dev Returns true if given lender has collected their collectible
+   *      amount
    */
-  function getLenderAddress(uint _marketId, uint _lenderId) public view returns (address) {
-    return markets[_marketId].lenders[_lenderId];
+  function collected(uint _marketId, address _address) public view returns (bool) {
+    if (getLenderCollectible(_address, _marketId) == getLenderCollected(_marketId, _address) &&
+      getLenderCollected(_marketId, _address) != 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /*** SETTERS & TRANSACTIONS ***/
@@ -142,57 +187,17 @@ contract MarketLend is MarketInterest {
   }
 
   /**
-   * @dev Calculates any excess lender funds that are not part of the market
-   *      pool (when total amount offered > total amount requested)
-   */
-  function calculateExcess(uint _marketId, address _address) private view returns (uint) {
-    if (markets[_marketId].totalLoaned > markets[_marketId].totalRequested) {
-      uint curValue = 0;
-      for (uint i = 0; i < getLenderCount(_marketId); i++) {
-        if (markets[_marketId].lenders[i] == _address) {
-          if (curValue <= markets[_marketId].totalRequested) {
-            uint newValue = curValue.add(markets[_marketId].lenderOffers[_address]);
-            if (newValue > markets[_marketId].totalRequested) {
-              uint diff = markets[_marketId].totalRequested.sub(curValue);
-              return markets[_marketId].lenderOffers[_address].sub(diff);
-            } else {
-              return 0;
-            }
-          }
-          break;
-        }
-        curValue = curValue.add(markets[_marketId].lenderOffers[markets[_marketId].lenders[i]]);
-      }
-    } else {
-      return 0;
-    }
-  }
-
-  /**
    * @dev Called by lenders who have been removed. Transfers excess amount exceeding
    *      market pool back to them.
    * TODO: try catch for when person calling is not lender
    */
-  function transferExcess(uint _marketId) public isLender(_marketId, msg.sender) {
-    require(checkLoanPeriod(_marketId));
+  function transferExcess(uint _marketId) public 
+  isLender(_marketId, msg.sender)
+  isAfterRequestPeriod(_marketId) {
     require(markets[_marketId].lenderOffers[msg.sender] > 0);
     uint excessAmt = calculateExcess(_marketId, msg.sender);
     msg.sender.transfer(excessAmt);
     ExcessTransferred(_marketId, msg.sender, excessAmt);
-  }
-
-  
-  /**
-   * @dev Checks whether a particular lender has collected their collectible
-   *      amount
-   */
-  function collected(uint _marketId, address _address) public view returns (bool) {
-    if (getLenderCollectible(_address, _marketId) == getLenderCollected(_marketId, _address) &&
-      getLenderCollected(_marketId, _address) != 0) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   /**
