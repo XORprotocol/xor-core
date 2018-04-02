@@ -8,6 +8,8 @@ contract MarketBorrow is MarketLend {
   using XorMath for uint;
   using SafeMath for uint;
 
+  event LoanRequested(uint _marketId, address _address, uint _amount);
+
   function getBorrower(uint _marketId, address _borrower) public view returns(uint, uint ,uint ,uint ,uint) {
     uint actualRequest = actualBorrowerRequest(_marketId, _borrower);
     return (
@@ -99,6 +101,7 @@ contract MarketBorrow is MarketLend {
     curMarket.borrowers.push(msg.sender);
     curMarket.borrowerRequests[msg.sender] = _amount;
     curMarket.totalRequested = curMarket.totalRequested.add(_amount);
+    LoanRequested(_marketId, msg.sender, _amount);
   }
 
   function repay(uint _marketId)
