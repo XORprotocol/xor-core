@@ -50,7 +50,8 @@ contract MarketBorrow is MarketLend {
   }
 
   function borrower(uint _marketId, address _address) public view returns (bool) {
-    if (actualBorrowerRequest(_marketId, _address) > 0) {
+    if ((checkRequestPeriod(_marketId) && getBorrowerRequest(_marketId, _address) > 0) || 
+      actualBorrowerRequest(_marketId, _address) > 0) {
       return true;
     } else {
       return false;
@@ -92,6 +93,7 @@ contract MarketBorrow is MarketLend {
     public
     isRequestPeriod(_marketId)
     isNotBorrower(_marketId, msg.sender)
+    isNotLender(_marketId, msg.sender)
   {
     Market storage curMarket = markets[_marketId];
     curMarket.borrowers.push(msg.sender);

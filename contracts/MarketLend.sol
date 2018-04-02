@@ -104,7 +104,8 @@ contract MarketLend is MarketInterest {
    *      and excess lenders are removed)
    */
   function lender(uint _marketId, address _address) public view returns (bool) {
-    if (actualLenderOffer(_address, _marketId) > 0) {
+    if ((checkRequestPeriod(_marketId) && getLenderOffer(_marketId, _address) > 0) ||
+      actualLenderOffer(_address, _marketId) > 0) {
       return true;
     } else {
       return false;
