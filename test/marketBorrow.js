@@ -1,0 +1,71 @@
+var MarketCore = artifacts.require("./MarketCore.sol");
+
+const utils = require('./helpers/Utils.js');
+
+contract('MarketBorrow', function(accounts) {
+
+  beforeEach(async function () {
+    this.marketCore = await MarketCore.deployed();
+    this.createMarket = await this.marketCore.createMarket(1000, 1000, 1000, 5);
+    this.marketId = this.createMarket.logs[0].args["marketId"].toNumber();
+  })
+
+  describe('requestLoan', function() {
+    it('should succeed if called in request period', async function() {
+      await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
+
+      const borrowerCount = await this.marketCore.getBorrowerCount(this.marketId);
+
+      assert.equal(borrowerCount.toNumber(), 1);
+    })
+
+    it('should fail if called twice', async function() {
+      await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
+      try {
+        await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
+      } catch (error) {
+        return utils.ensureException(error);
+      }
+      assert.fail('Expected exception not received');
+    })
+
+    it('should fail if called in loan period', async function() {
+      web3.currentProvider.send({jsonrpc: "2.0", method: "evm_increaseTime", params: [1001], id: 0});
+      try {
+        await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
+      } catch (error) {
+        return utils.ensureException(error);
+      }
+      assert.fail('Expected exception not received');
+    })
+
+    it('should fail if already lender', async function() {
+      await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(10), from: accounts[0]});
+      const lender = await this.marketCore.lender(this.marketId, accounts[0]);
+      try {
+        await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
+      } catch (error) {
+        return utils.ensureException(error);
+      }
+      assert.fail('Expected exception not received');
+    })
+  })
+
+  describe('borrow', function() {
+    it('should return true if request period and borrower request greater than zero', async function() {
+
+    })
+
+    it('should return true if actual borrower request is greater than zero', async function() {
+
+    })
+
+    it('should return false if borrower request is zero', async function() {
+
+    })
+
+    it('should return false if actual borrower request is zero after request period', async function() {
+
+    })
+  })
+});
