@@ -39,7 +39,9 @@ contract MarketCore is MarketBorrow {
 
   function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant)
     public
+    returns (uint)
   {
+    require(_requestPeriod > 0 && _loanPeriod > 0 && _settlementPeriod > 0 && _riskConstant > 0);
     _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _riskConstant);
   }
 
