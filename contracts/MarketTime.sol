@@ -101,6 +101,7 @@ contract MarketTime is MarketIdentity {
     }
   }
 
+  /*** MODIFIERS ***/
   /**  
    * @dev Throws if market is not currently in "Request Period"
    */
@@ -130,6 +131,14 @@ contract MarketTime is MarketIdentity {
    */
   modifier isCollectionPeriod(uint _marketId) {
     require(checkCollectionPeriod(_marketId));
+    _;
+  }
+  
+  /**
+   * @dev Throws if market is before the end of "Request Period"
+   */
+  modifier isAfterRequestPeriod(uint _marketId) {
+    require(block.timestamp >= requestPeriodEnd(_marketId));
     _;
   }
 }

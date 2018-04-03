@@ -2,13 +2,20 @@ pragma solidity ^0.4.18;
 
 import './MarketBorrow.sol';
 
-contract MarketCore is MarketBorrow {
+/**
+  * @title MarketCore
+  * @dev This is the main XOR Market contract, 
+  *      keeps track of all the XOR Markets in existence.
+ */
 
-  function getMarket(uint _marketId)
-    public
-    view
-    returns
-  (
+contract MarketCore is MarketBorrow {
+  /*** GETTERS ***/
+  /**
+   * @dev Retrieves all fields/relevant information about a Market
+   * @param _marketId The ID of the market of interest
+   */
+  function getMarket(uint _marketId) public view
+    returns (
     uint,
     uint,
     uint,
@@ -37,18 +44,28 @@ contract MarketCore is MarketBorrow {
     );
   }
 
-  function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant)
-    public
-    returns (uint)
+  /**
+   * @dev A public method that creates a new market and stores it.
+   */
+  function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant, address _trustContractAddress)
+    public returns (uint)
   {
     require(_requestPeriod > 0 && _loanPeriod > 0 && _settlementPeriod > 0 && _riskConstant > 0);
-    _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _riskConstant);
+    _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _riskConstant, _trustContractAddress);
   }
 
+  /**
+   * @dev A public function that retrieves the size of the marketPool actually 
+   *      available for loans. Takes the minimum of total amount requested by 
+   *      borrowers and total amount offered by lenders
+   */
   function marketPool(uint _marketId) public view returns (uint) {
     return _marketPool(_marketId);
   }
 
+  /**
+   * @dev A public function that retrieves the number of markets currently on XOR
+   */
   function getMarketCount() public view returns (uint) {
     return markets.length;
   }
