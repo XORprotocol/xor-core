@@ -34,8 +34,8 @@ contract MarketInterest is MarketTrust {
   * @dev Simple custom calculation of risk factor for an individual borrower
   * @param _amt The amount being requested by borrower in current loan request
   */
-  function getRisk(address _address, uint _amt) private view returns (uint) {
-    return _amt.div(getTrustScore(_address));       
+  function getRisk(address _address, uint _amt, uint _marketId) private view returns (uint) {
+    return _amt.div(getTrustScore(_marketId, _address));       
   }
 
   /**
@@ -43,7 +43,7 @@ contract MarketInterest is MarketTrust {
   * @param _amt The amount being requested by borrower in current loan request
   */
   function getInterest(address _address, uint _amt, uint _marketId) public view returns (uint) {
-    return getRisk(_address, _amt).mul(markets[_marketId].riskConstant);
+    return getRisk(_address, _amt, _marketId).mul(markets[_marketId].riskConstant);
   }
 
   /*** MODIFIERS ***/
@@ -51,7 +51,7 @@ contract MarketInterest is MarketTrust {
   * @dev Throws if said borrower currently has trust score of zero
   */
   modifier aboveMinTrust(address _address, uint _amt, uint _marketId) {
-    require(getTrustScore(_address) > 0);
+    require(getTrustScore(_marketId, _address) > 0);
     _;
   }
 }
