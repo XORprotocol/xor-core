@@ -47,11 +47,11 @@ contract MarketCore is MarketBorrow {
   /**
    * @dev A public method that creates a new market and stores it.
    */
-  function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant)
+  function createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant, address _trustContractAddress)
     public returns (uint)
   {
     require(_requestPeriod > 0 && _loanPeriod > 0 && _settlementPeriod > 0 && _riskConstant > 0);
-    _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _riskConstant);
+    _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _riskConstant, _trustContractAddress);
   }
 
   /**

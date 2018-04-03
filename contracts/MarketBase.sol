@@ -55,6 +55,9 @@ contract MarketBase is Killable {
     
     // Array of all borrowers participating in the market
     address[] borrowers; 
+
+    // Address of external trust contract
+    address trustContractAddress;
     
     // Mapping of each lender (their address) to the size of their loan offer
     // (in Wei); amount put forward by each lender
@@ -94,11 +97,11 @@ contract MarketBase is Killable {
      method doesn't do any checking and should only be called when the
      nput data is known to be valid
   */
-  function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant) internal returns (uint) {
+  function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant, address _trustContractAddress) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
-      block.timestamp, _riskConstant, _lenders, _borrowers)) - 1;
+      block.timestamp, _riskConstant, _lenders, _borrowers, _trustContractAddress)) - 1;
     marketIndexToMaker[newId] = msg.sender;
     NewMarket(newId);
     return newId;
