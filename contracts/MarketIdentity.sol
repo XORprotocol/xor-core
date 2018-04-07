@@ -29,6 +29,20 @@ contract MarketIdentity is MarketBase {
   }
 
   /**
+   * @dev Given the address, return the repayment at a specific index
+   */
+  function getRepayment(address _address, uint _index) public view returns (uint) {
+    return repayments[_address][_index];
+  }
+
+  /**
+   * @dev Given the address, return the default at a specific index
+   */
+  function getDefault(address _address, uint _index) public view returns (uint) {
+    return defaults[_address][_index];
+  }
+
+  /**
    * @dev Retrieves the number of repayments
    */
   function getRepaymentsLength(address _address) public view returns (uint) {

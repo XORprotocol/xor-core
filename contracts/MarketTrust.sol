@@ -32,7 +32,7 @@ contract MarketTrust is MarketTime {
   function getTrustScore(uint _marketId, address _address) public view returns (uint) {
     Market storage curMarket = markets[_marketId];
   	trustContract = MarketTrustInterface(curMarket.trustContractAddress);
-  	trustContract.getTrustScore(_address);
+  	return trustContract.getTrustScore(_address);
   }
 
 }
