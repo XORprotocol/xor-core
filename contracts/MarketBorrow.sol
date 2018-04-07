@@ -212,6 +212,7 @@ contract MarketBorrow is MarketLend {
     Market storage curMarket = markets[_marketId];
     curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
     curMarket.borrowerRepaid[msg.sender] = msg.value;
+    addToRepayments(msg.sender, msg.value);
     LoanRepaid(_marketId, msg.sender, msg.value);
   }
 
