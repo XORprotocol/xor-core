@@ -10,6 +10,8 @@ var MarketLend = artifacts.require("./MarketLend.sol");
 var MarketBorrow = artifacts.require("./MarketBorrow.sol");
 var MarketCore = artifacts.require("./MarketCore.sol");
 
+var ExampleMarketTrust = artifacts.require("./examples/ExampleMarketTrust.sol");
+
 module.exports = function(deployer) {
   deployer.deploy(Ownable);
   deployer.link(Ownable, Killable);
@@ -37,4 +39,9 @@ module.exports = function(deployer) {
   deployer.deploy(MarketBorrow);
   deployer.link(MarketBorrow, MarketCore);
   deployer.deploy(MarketCore);
+
+  deployer.link(SafeMath, ExampleMarketTrust);
+  deployer.link(XorMath, ExampleMarketTrust);
+  deployer.link(Killable, ExampleMarketTrust);
+  deployer.deploy(ExampleMarketTrust);
 };
