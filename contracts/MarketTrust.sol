@@ -10,11 +10,12 @@ import './MarketTime.sol';
 contract MarketTrustInterface {
   /**
   * @dev Calculates trust score for borrowers which will be used to determine
-  *      their risk factor and rate of interest
+  *      their interest payment
   * @param _address Address of individual being checked
   */ 
   function getTrustScore(address _address) public view returns (uint);
 }
+
 
 /**
  * @title MarketTrust
@@ -25,8 +26,7 @@ contract MarketTrust is MarketTime {
   
   /**
   * @dev Calculates trust score for borrowers by interfacing with a custom Market 
-  *      Trust Contract which will be used to determine their risk factor and 
-  *      rate of interest
+  *      Trust Contract which will be used to determine their interest payment
   * @param _address Address of individual being checked
   */ 
   function getTrustScore(uint _marketId, address _address) public view returns (uint) {

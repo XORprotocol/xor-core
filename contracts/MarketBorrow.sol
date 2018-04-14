@@ -92,9 +92,9 @@ contract MarketBorrow is MarketLend {
    * @dev Fetches the total size of repayment a borrower has to make to cover
    *      principal + interest
    */
-  function getRepayment(address _address, uint _marketId) public view returns (uint) {
+  function getTotalRepayment(uint _marketId, address _address) public view returns (uint) {
     uint request = actualBorrowerRequest(_marketId, _address);
-    return request.add(getInterest(_address, request, _marketId));
+    return request.add(getInterest(_marketId, _address, request));
   }
 
   /**
@@ -167,7 +167,7 @@ contract MarketBorrow is MarketLend {
   function repaid(uint _marketId, address _address) public view returns (bool) {
     Market storage curMarket = markets[_marketId];
     uint actualRequest = actualBorrowerRequest(_marketId, _address);
-    uint expectedRepayment = actualRequest.add(getInterest(_address, actualRequest, _marketId));
+    uint expectedRepayment = actualRequest.add(getInterest(_marketId, _address, actualRequest));
     if (curMarket.borrowerRepaid[msg.sender] == expectedRepayment) {
       return true;
     } else {

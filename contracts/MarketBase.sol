@@ -1,13 +1,13 @@
 pragma solidity ^0.4.18; 
 
-import 'zeppelin-solidity/contracts/lifecycle/Destructible.sol';
+import './zeppelin/lifecycle/Killable.sol';
 
 /**
   * @title MarketBase
   * @dev Base contract for XOR Markets. Holds all common structs, events and base variables
  */
 
-contract MarketBase is Destructible {
+contract MarketBase is Killable {
   /*** EVENTS ***/
   /**
    * @dev Triggered when a new market has been created.
@@ -58,6 +58,9 @@ contract MarketBase is Destructible {
 
     // Address of external trust contract
     address trustContractAddress;
+
+    // Address of external interest contract
+    address interestContractAddress;
     
     // Mapping of each lender (their address) to the size of their loan offer
     // (in Wei); amount put forward by each lender
@@ -97,11 +100,12 @@ contract MarketBase is Destructible {
      method doesn't do any checking and should only be called when the
      nput data is known to be valid
   */
-  function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, uint _riskConstant, address _trustContractAddress) internal returns (uint) {
+  function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, 
+    uint _riskConstant, address _trustContractAddress, address _interestContractAddress) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
-      block.timestamp, _riskConstant, _lenders, _borrowers, _trustContractAddress)) - 1;
+      block.timestamp, _riskConstant, _lenders, _borrowers, _trustContractAddress, _interestContractAddress)) - 1;
     marketIndexToMaker[newId] = msg.sender;
     NewMarket(newId);
     return newId;
