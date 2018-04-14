@@ -16,4 +16,7 @@ build_webpack
 npm-debug.log
 .truffle-solidity-loader
 
+truffle.js
+
 yarn-error.log
+yarn.lock
