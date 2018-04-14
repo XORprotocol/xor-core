@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-import './MarketIdentity.sol';
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 import './libraries/XorMath.sol';
-import './libraries/SafeMath.sol';
+import './MarketIdentity.sol';
 
 /**
   * @title MarketTime

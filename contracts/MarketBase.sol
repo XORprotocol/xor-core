@@ -1,13 +1,13 @@
 pragma solidity ^0.4.18;
 
-import './zeppelin/lifecycle/Killable.sol';
+import 'zeppelin-solidity/contracts/lifecycle/Destructible.sol';
 
 /**
   * @title MarketBase
   * @dev Base contract for XOR Markets. Holds all common structs, events and base variables
  */
 
-contract MarketBase is Killable {
+contract MarketBase is Destructible {
   /*** EVENTS ***/
   /**
    * @dev Triggered when a new market has been created.
