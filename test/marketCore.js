@@ -1,12 +1,14 @@
 var MarketCore = artifacts.require("./MarketCore.sol");
+var ExampleMarketTrust = artifacts.require("./examples/ExampleMarketTrust.sol");
 
 const utils = require('./helpers/Utils');
 
 contract('MarketCore', function(accounts) {
 
   beforeEach(async function () {
+    this.exampleMarketTrust = await ExampleMarketTrust.deployed();
     this.marketCore = await MarketCore.deployed();
-    this.createMarket = await this.marketCore.createMarket(1000, 1000, 1000, 5);
+    this.createMarket = await this.marketCore.createMarket(1000, 1000, 1000, 5, this.exampleMarketTrust.address);
     this.marketId = this.createMarket.logs[0].args["marketId"].toNumber();
   })
 
