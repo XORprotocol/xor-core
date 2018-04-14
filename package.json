@@ -1,6 +1,6 @@
 {
   "name": "XOR-Core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Democratizing Financial Access for Everyone",
   "main": "truffle.js",
   "directories": {
@@ -10,7 +10,8 @@
     "compile": "rm -rf build/contracts/*.json && truffle compile",
     "migrate": "truffle migrate",
     "deploy": "truffle deploy",
-    "console": "truffle console"
+    "console": "truffle console",
+    "test": "truffle test"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,8 @@
   "dependencies": {
     "truffle": "4.0.1",
     "truffle-hdwallet-provider": "0.0.3",
-    "zeppelin-solidity": "^1.8.0"
+    "zeppelin-solidity": "^1.8.0",
+    "XorExternalContractExamples": "https://github.com/XORprotocol/xor-external-contract-examples"
   },
   "devDependencies": {
     "eslint-plugin-import": "2.7.0",
