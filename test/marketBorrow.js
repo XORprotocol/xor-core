@@ -1,5 +1,5 @@
 var MarketCore = artifacts.require("./MarketCore.sol");
-var ExampleMarketTrust = artifacts.require("./examples/ExampleMarketTrust.sol");
+var ExampleMarketTrust = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketTrust.sol");
 
 const utils = require('./helpers/Utils.js')
 

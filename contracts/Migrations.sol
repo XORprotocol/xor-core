@@ -1,5 +1,6 @@
 pragma solidity 0.4.18; 
 
+import 'XorExternalContractExamples/contracts/ExampleMarketTrust.sol';
 
 contract Migrations {
     address public owner;

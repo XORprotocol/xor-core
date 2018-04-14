@@ -10,7 +10,7 @@ var MarketLend = artifacts.require("./MarketLend.sol");
 var MarketBorrow = artifacts.require("./MarketBorrow.sol");
 var MarketCore = artifacts.require("./MarketCore.sol");
 
-var ExampleMarketTrust = artifacts.require("./examples/ExampleMarketTrust.sol");
+var ExampleMarketTrust = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketTrust.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(Ownable);
