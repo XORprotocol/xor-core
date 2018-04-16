@@ -20,3 +20,4 @@ truffle.js
 
 yarn-error.log
 yarn.lock
+truffle-config.js

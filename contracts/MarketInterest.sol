@@ -7,17 +7,18 @@ import './MarketTrust.sol';
  * @dev Interface for custom contracts calculating interest
  */
 
-contract MarketInterestExampleInterface {
+contract MarketInterestInterface {
   /**
-  * @dev Calculates interest payment for borrowers
-  */ 
+   * @dev Calculates interest payment for borrowers
+   * @param _address Address of individual being checked
+   * @param _amt The amount being requested by borrower in current market
+   */ 
   function getInterest(uint _marketId, address _address, uint _amt) public view returns (uint);
 }
 
 
 /**
-  * @param _address Address of individual being checked
-  * @param _amt The amount being requested by borrower in current market
+
  * @title MarketInterest
  * @dev Contract handling logic to calculate interest for a given borrower
  */
