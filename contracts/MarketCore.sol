@@ -69,4 +69,11 @@ contract MarketCore is MarketBorrow {
   function getMarketCount() public view returns (uint) {
     return markets.length;
   }
+
+  /**
+   * @dev A public function that retreives the risk Constant of a given market
+   */
+  function getRiskConstant(uint _marketId) public view returns (uint) {
+    return markets[_marketId].riskConstant;
+  }
 }
