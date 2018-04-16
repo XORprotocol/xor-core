@@ -40,9 +40,12 @@ module.exports = function(deployer) {
   deployer.deploy(MarketBorrow);
   deployer.link(MarketBorrow, MarketCore);
   deployer.deploy(MarketCore);
-
   deployer.link(SafeMath, ExampleMarketTrust);
+  deployer.link(SafeMath, ExampleMarketInterest);
   deployer.link(XorMath, ExampleMarketTrust);
   deployer.link(Destructible, ExampleMarketTrust);
+  deployer.link(Destructible, ExampleMarketInterest);
   deployer.deploy(ExampleMarketTrust);
+  deployer.deploy(ExampleMarketInterest);
+
 };
