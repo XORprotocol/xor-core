@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-"XorExternalContractExamples@https://github.com/XORprotocol/xor-external-contract-examples":
-  version "0.1.0"
-  resolved "https://github.com/XORprotocol/xor-external-contract-examples#02d86b91b6cd40b65508ebfb459612a51fb7e37c"
-  dependencies:
-    truffle "4.0.1"
-    truffle-hdwallet-provider "0.0.3"
-
 abstract-leveldown@~2.6.0:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/abstract-leveldown/-/abstract-leveldown-2.6.3.tgz#1c5e8c6a5ef965ae8c35dfb3a8770c476b82c4b8"
@@ -1874,6 +1867,23 @@ xhr@^2.2.0:
 xmlhttprequest@*:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz#67fe075c5c24fef39f9d65f5f7b7fe75171968fc"
+
+"xor-external-contract-examples@https://github.com/XORprotocol/xor-external-contract-examples":
+  version "0.1.0"
+  resolved "https://github.com/XORprotocol/xor-external-contract-examples#8200be8eef60a7f3d33d3bb2082863252e1c8a9d"
+  dependencies:
+    truffle "4.0.1"
+    truffle-hdwallet-provider "0.0.3"
+    xor-libraries "https://github.com/XORprotocol/xor-libraries.git"
+    zeppelin-solidity "^1.8.0"
+
+"xor-libraries@https://github.com/XORprotocol/xor-libraries.git":
+  version "0.1.0"
+  resolved "https://github.com/XORprotocol/xor-libraries.git#422fe6785ba8f81698a5b1dbcdb48bf6931a5ec0"
+  dependencies:
+    truffle "4.0.1"
+    truffle-hdwallet-provider "0.0.3"
+    zeppelin-solidity "^1.8.0"
 
 xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.0:
   version "4.0.1"

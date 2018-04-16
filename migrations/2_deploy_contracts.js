@@ -1,7 +1,7 @@
 var Ownable = artifacts.require("zeppelin-solidity/contracts/ownership/Ownable.sol");
-var Killable = artifacts.require("zeppelin-solidity/contracts/lifecycle/Destructible.sol");
+var Destructible = artifacts.require("zeppelin-solidity/contracts/lifecycle/Destructible.sol");
 var SafeMath = artifacts.require("zeppelin-solidity/contracts/math/SafeMath.sol");
-var XorMath = artifacts.require("./libraries/XorMath.sol");
+var XorMath = artifacts.require("xor-libraries/contracts/XorMath.sol");
 var MarketBase = artifacts.require("./MarketBase.sol");
 var MarketIdentity = artifacts.require("./MarketIdentity.sol");
 var MarketTime = artifacts.require("./MarketTime.sol");
@@ -10,13 +10,13 @@ var MarketLend = artifacts.require("./MarketLend.sol");
 var MarketBorrow = artifacts.require("./MarketBorrow.sol");
 var MarketCore = artifacts.require("./MarketCore.sol");
 
-var ExampleMarketTrust = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketTrust.sol");
+var ExampleMarketTrust = artifacts.require("xor-external-contract-examples/contracts/ExampleMarketTrust.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(Ownable);
-  deployer.link(Ownable, Killable);
-  deployer.deploy(Killable);
-  deployer.link(Killable, MarketBase);
+  deployer.link(Ownable, Destructible);
+  deployer.deploy(Destructible);
+  deployer.link(Destructible, MarketBase);
   deployer.deploy(MarketBase);
   deployer.link(MarketBase, MarketIdentity);
   deployer.deploy(MarketIdentity);
@@ -42,6 +42,6 @@ module.exports = function(deployer) {
 
   deployer.link(SafeMath, ExampleMarketTrust);
   deployer.link(XorMath, ExampleMarketTrust);
-  deployer.link(Killable, ExampleMarketTrust);
+  deployer.link(Destructible, ExampleMarketTrust);
   deployer.deploy(ExampleMarketTrust);
 };
