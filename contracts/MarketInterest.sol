@@ -7,17 +7,17 @@ import './MarketTrust.sol';
  * @dev Interface for custom contracts calculating interest
  */
 
-contract MarketInterestInterface {
+contract MarketInterestExampleInterface {
   /**
   * @dev Calculates interest payment for borrowers
-  * @param _address Address of individual being checked
-  * @param _amt The amount being requested by borrower in current market
   */ 
-  function getInterest(address _address, uint _amt) public view returns (uint);
+  function getInterest(uint _marketId, address _address, uint _amt) public view returns (uint);
 }
 
 
 /**
+  * @param _address Address of individual being checked
+  * @param _amt The amount being requested by borrower in current market
  * @title MarketInterest
  * @dev Contract handling logic to calculate interest for a given borrower
  */
@@ -32,7 +32,7 @@ contract MarketInterest is MarketTrust {
   function getInterest(uint _marketId, address _address, uint _amt) public view returns (uint) {
     Market storage curMarket = markets[_marketId];
     interestContract = MarketInterestInterface(curMarket.interestContractAddress);
-    return interestContract.getInterest(_address, _amt);
+    return interestContract.getInterest(_marketId, _address, _amt);
   }
 
   /*** MODIFIERS ***/
