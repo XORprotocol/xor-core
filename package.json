@@ -33,8 +33,7 @@
     "truffle": "4.0.1",
     "truffle-hdwallet-provider": "0.0.3",
     "zeppelin-solidity": "^1.8.0",
-    "xor-external-contract-examples": "https://github.com/XORprotocol/xor-external-contract-examples",
-    "xor-libraries": "https://github.com/XORprotocol/xor-libraries.git"
+    "xor-external-contract-examples": "https://github.com/XORprotocol/xor-external-contract-examples"
 
   },
   "devDependencies": {
