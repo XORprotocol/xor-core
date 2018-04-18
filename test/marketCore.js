@@ -1,5 +1,6 @@
 var MarketCore = artifacts.require("./MarketCore.sol");
 var ExampleMarketTrust = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketTrust.sol");
+var ExampleMarketInterest = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketInterest.sol");
 
 const utils = require('./helpers/Utils');
 
@@ -7,17 +8,33 @@ contract('MarketCore', function(accounts) {
 
   beforeEach(async function () {
     this.exampleMarketTrust = await ExampleMarketTrust.deployed();
+    this.exampleMarketInterest = await ExampleMarketInterest.deployed();
     this.marketCore = await MarketCore.deployed();
-    this.createMarket = await this.marketCore.createMarket(1000, 1000, 1000, 5, this.exampleMarketTrust.address);
+    this.createMarket = await this.marketCore.createMarket(
+      1000,
+      1000,
+      1000,
+      5,
+      this.exampleMarketTrust.address,
+      this.exampleMarketInterest.address
+    );
+    this.createMarket2 = await this.marketCore.createMarket(
+      1000,
+      1000,
+      1000,
+      5,
+      this.exampleMarketTrust.address,
+      this.exampleMarketInterest.address
+    );
     this.marketId = this.createMarket.logs[0].args["marketId"].toNumber();
   })
 
   describe('getMarketCount', function() {
-    describe('when one market has been created', function() {
-      it('should return one', async function() {
+    describe('when two markets has been created', function() {
+      it('should return two', async function() {
         const count = await this.marketCore.getMarketCount();
 
-        assert.equal(count.toNumber(), 1);
+        assert.equal(count.toNumber(), 2);
       })
     })
   })

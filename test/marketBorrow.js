@@ -1,5 +1,6 @@
 var MarketCore = artifacts.require("./MarketCore.sol");
 var ExampleMarketTrust = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketTrust.sol");
+var ExampleMarketInterest = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketInterest.sol");
 
 const utils = require('./helpers/Utils.js')
 
@@ -7,9 +8,26 @@ contract('MarketBorrow', function(accounts) {
 
   beforeEach(async function () {
     this.exampleMarketTrust = await ExampleMarketTrust.deployed();
+    this.exampleMarketInterest = await ExampleMarketInterest.deployed();
     this.marketCore = await MarketCore.deployed();
-    this.createMarket = await this.marketCore.createMarket(1000, 1000, 1000, 5, this.exampleMarketTrust.address);
+    this.createMarket = await this.marketCore.createMarket(
+      1000,
+      1000,
+      1000,
+      5,
+      this.exampleMarketTrust.address,
+      this.exampleMarketInterest.address
+    );
+    this.createMarket2 = await this.marketCore.createMarket(
+      1000,
+      1000,
+      1000,
+      5,
+      this.exampleMarketTrust.address,
+      this.exampleMarketInterest.address
+    );
     this.marketId = this.createMarket.logs[0].args["marketId"].toNumber();
+    this.marketId2 = this.createMarket2.logs[0].args["marketId"].toNumber();
   })
 
   describe('requestLoan', function() {
@@ -42,7 +60,7 @@ contract('MarketBorrow', function(accounts) {
     })
 
     it('should fail if already lender', async function() {
-      await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(10), from: accounts[0]});
+      await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(10)});
       const lender = await this.marketCore.lender(this.marketId, accounts[0]);
       try {
         await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
@@ -58,7 +76,9 @@ contract('MarketBorrow', function(accounts) {
       await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
       await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(10), from: accounts[1]});
       const borrower = await this.marketCore.borrower(this.marketId, accounts[0]);
-      const requestPeriod = await this.marketCore.checkRequestPeriod(this.marketId);
+      const requestPeriod = await this.marketCore.checkRequestPeriod(this.marketId, {from: accounts[0]});
+      const getMarketPeriod = await this.marketCore.getMarketPeriod(this.marketId);
+      const requestPeriodEnd = await this.marketCore.requestPeriodEnd(this.marketId, {from: accounts[0]});
       assert.equal(requestPeriod, true);
       assert.equal(borrower, true);
     })
@@ -69,10 +89,10 @@ contract('MarketBorrow', function(accounts) {
       web3.currentProvider.send({jsonrpc: "2.0", method: "evm_increaseTime", params: [1001], id: 0});
       web3.currentProvider.send({jsonrpc: "2.0", method: "evm_mine", params: [], id: 0})
       const actualBorrowerRequest = await this.marketCore.actualBorrowerRequest(this.marketId, accounts[0]);
-      const borrower = await this.marketCore.borrower(this.marketId, accounts[0]);
-      const loanPeriod = await this.marketCore.checkLoanPeriod(this.marketId);
+      const borrower = await this.marketCore.borrower.call(this.marketId, accounts[0]);
+      // const loanPeriod = await this.marketCore.checkLoanPeriod(this.marketId);
       assert.equal(actualBorrowerRequest, web3.toWei(5));
-      assert.equal(loanPeriod, true);
+      // assert.equal(loanPeriod, true);
       assert.equal(borrower, true);
     })
 
@@ -87,6 +107,24 @@ contract('MarketBorrow', function(accounts) {
       web3.currentProvider.send({jsonrpc: "2.0", method: "evm_mine", params: [], id: 0})
       const borrower = await this.marketCore.borrower(this.marketId, accounts[0]);
       assert.equal(borrower, false);
+    })
+  })
+
+  describe('getBorrowerRequest', function() {
+    it('should return correct request amount', async function() {
+      await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
+      const getBorrowerRequest = await this.marketCore.getBorrowerRequest(this.marketId, accounts[0]);
+      assert.equal(web3.toWei(5), getBorrowerRequest);
+    })
+  })
+
+  describe('actualBorrowerRequest', function() {
+    it('should return zero if no lenders', async function() {
+      await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[0]});
+      const getLenderCount = await this.marketCore.getLenderCount(this.marketId);
+      const actualBorrowerRequest = await this.marketCore.actualBorrowerRequest(this.marketId, accounts[0]);
+      assert.equal(0, getLenderCount);
+      assert.equal(0, actualBorrowerRequest);
     })
   })
 });
