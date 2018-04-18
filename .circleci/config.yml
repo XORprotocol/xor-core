@@ -1,12 +1,38 @@
-dependencies:
-  pre:
-    - yarn install truffle -g
-  override:
-    - npm i -g yarn:
-        timeout: 240
-    - yarn postinstall:
-        timeout: 240
-
-machine:
-  node:
-    version: 6.10.2
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:9.5.0
+    working_directory: ~/xor-core
+    steps:
+      - checkout
+      - run:
+          name: fetch-deps
+          command: 'sudo chmod +x .circleci/fetch-deps.sh && ./.circleci/fetch-deps.sh'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm-wee
+          command: yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: truffle-js
+          command: cp truffle-example.js truffle.js
+      - run:
+          name: ganache-cli
+          command: sudo yarn global add ganache-cli
+      - run:
+          name: run ganache-cli
+          background: true
+          command: ganache-cli
+      - run:
+          name: test
+          command: yarn test
+      - store_artifacts:
+          path: test-results.xml
+          prefix: tests
+      - store_test_results:
+          path: test-results.xml
