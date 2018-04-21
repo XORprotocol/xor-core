@@ -28,7 +28,7 @@ contract('MarketBorrow', function(accounts) {
     );
     this.marketId = this.createMarket.logs[0].args["marketId"].toNumber();
     this.marketId2 = this.createMarket2.logs[0].args["marketId"].toNumber();
-  })
+  });
 
   describe('requestLoan', function() {
     it('should succeed if called in request period', async function() {
@@ -78,7 +78,6 @@ contract('MarketBorrow', function(accounts) {
       const borrower = await this.marketCore.borrower(this.marketId, accounts[0]);
       const requestPeriod = await this.marketCore.checkRequestPeriod(this.marketId, {from: accounts[0]});
       const getMarketPeriod = await this.marketCore.getMarketPeriod(this.marketId);
-      const requestPeriodEnd = await this.marketCore.requestPeriodEnd(this.marketId, {from: accounts[0]});
       assert.equal(requestPeriod, true);
       assert.equal(borrower, true);
     })
