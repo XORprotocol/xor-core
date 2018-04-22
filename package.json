@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "compile": "rm -rf build/contracts/*.json && truffle compile",
+    "compile": "truffle compile",
     "migrate": "truffle migrate",
     "deploy": "truffle deploy",
     "console": "truffle console",
@@ -35,7 +35,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "coveralls": "^3.0.0",
     "solc": "0.4.21",
-    "truffle": "4.0.1",
+    "truffle": "4.1.7",
     "truffle-hdwallet-provider": "0.0.3",
     "xor-external-contract-examples": "https://github.com/XORprotocol/xor-external-contract-examples",
     "zeppelin-solidity": "^1.8.0"

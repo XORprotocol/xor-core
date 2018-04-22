@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18; 
+pragma solidity ^0.4.23; 
 
 import 'xor-libraries/contracts/XorMath.sol';
 import './MarketIdentity.sol';
