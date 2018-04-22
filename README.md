@@ -1,4 +1,4 @@
-# <img align="left" src="https://avatars2.githubusercontent.com/u/37997426" height="80px" /> XOR Core
+# <img align="left" src="https://avatars2.githubusercontent.com/u/37997426" height="40px" /> XOR Core
 [![CircleCI branch](https://img.shields.io/circleci/project/github/XORprotocol/xor-core/master.svg?style=for-the-badge)](https://circleci.com/gh/XORprotocol/xor-core)
 
 XOR is a modular and democratic decentralized credit protocol built on Ethereum. For a full description, reference our [whitepaper](https://xor.finance/whitepaper.pdf)
