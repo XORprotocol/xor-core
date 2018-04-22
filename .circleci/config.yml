@@ -36,3 +36,6 @@ jobs:
           prefix: tests
       - store_test_results:
           path: test-results.xml
+      - run:
+          name: coveralls
+          command: yarn coverage
