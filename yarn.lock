@@ -4029,16 +4029,6 @@ solc@0.4.21, solc@^0.4.2:
     semver "^5.3.0"
     yargs "^4.7.1"
 
-solc@0.4.23:
-  version "0.4.23"
-  resolved "https://registry.yarnpkg.com/solc/-/solc-0.4.23.tgz#54a0ff4015827b32fddb62c0a418b5247310a58e"
-  dependencies:
-    fs-extra "^0.30.0"
-    memorystream "^0.3.1"
-    require-from-string "^1.1.0"
-    semver "^5.3.0"
-    yargs "^4.7.1"
-
 solidity-coverage@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/solidity-coverage/-/solidity-coverage-0.5.0.tgz#af15375113979eef640ef7564016b05e924fcb7a"
@@ -4358,13 +4348,13 @@ truffle@4.0.1:
     original-require "^1.0.1"
     solc "0.4.18"
 
-truffle@4.1.7:
-  version "4.1.7"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-4.1.7.tgz#b2d66d26eafd92da868d67765953e12c8160aedb"
+truffle@4.1.4:
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-4.1.4.tgz#733f92d558090f866180e8f46ed083aaae7c1146"
   dependencies:
     mocha "^3.4.2"
     original-require "^1.0.1"
-    solc "0.4.23"
+    solc "0.4.21"
 
 tunnel-agent@^0.6.0:
   version "0.6.0"

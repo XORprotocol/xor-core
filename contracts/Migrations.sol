@@ -1,4 +1,4 @@
-pragma solidity 0.4.23; 
+pragma solidity 0.4.21; 
 
 import 'xor-external-contract-examples/contracts/ExampleMarketTrust.sol';
 import 'xor-external-contract-examples/contracts/ExampleMarketInterest.sol';
