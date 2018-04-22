@@ -21,3 +21,6 @@ truffle.js
 yarn-error.log
 
 truffle-config.js
+
+coverageEnv
+scTopics
