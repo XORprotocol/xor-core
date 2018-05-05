@@ -12,6 +12,9 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
+          name: yarn cache clean
+          command: yarn cache clean
+      - run:
           name: install-npm-wee
           command: yarn install
       - save_cache:
