@@ -194,7 +194,7 @@ contract MarketBorrow is MarketLend {
     curMarket.borrowers.push(msg.sender);
     curMarket.borrowerRequests[msg.sender] = _amount;
     curMarket.totalRequested = curMarket.totalRequested.add(_amount);
-    LoanRequested(_marketId, msg.sender, _amount);
+    emit LoanRequested(_marketId, msg.sender, _amount);
   }
 
   /**
@@ -213,7 +213,7 @@ contract MarketBorrow is MarketLend {
     curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
     curMarket.borrowerRepaid[msg.sender] = msg.value;
     addToRepayments(msg.sender, msg.value);
-    LoanRepaid(_marketId, msg.sender, msg.value);
+    emit LoanRepaid(_marketId, msg.sender, msg.value);
   }
 
   /**
