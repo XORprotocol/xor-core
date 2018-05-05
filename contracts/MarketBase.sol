@@ -56,6 +56,9 @@ contract MarketBase is Killable {
     // Array of all borrowers participating in the market
     address[] borrowers; 
 
+    // Address of external governance contract
+    address governanceContractAddress;
+
     // Address of external trust contract
     address trustContractAddress;
 
@@ -101,11 +104,12 @@ contract MarketBase is Killable {
      nput data is known to be valid
   */
   function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, 
-    uint _riskConstant, address _trustContractAddress, address _interestContractAddress) internal returns (uint) {
+    uint _riskConstant, address _governanceContractAddress, address _trustContractAddress, address _interestContractAddress) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
-      block.timestamp, _riskConstant, _lenders, _borrowers, _trustContractAddress, _interestContractAddress)) - 1;
+      block.timestamp, _riskConstant, _lenders, _borrowers, _governanceContractAddress, 
+      _trustContractAddress, _interestContractAddress)) - 1;
     marketIndexToMaker[newId] = msg.sender;
     NewMarket(newId);
     return newId;

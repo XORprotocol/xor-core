@@ -33,7 +33,7 @@
     "truffle": "4.0.1",
     "truffle-hdwallet-provider": "0.0.3",
     "zeppelin-solidity": "^1.8.0",
-    "XorExternalContractExamples": "https://github.com/XORprotocol/xor-external-contract-examples"
+    "xor-external-contract-examples": "https://github.com/XORprotocol/xor-external-contract-examples"
   },
   "devDependencies": {
     "eslint-plugin-import": "2.7.0",
