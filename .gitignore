@@ -24,3 +24,5 @@ truffle-config.js
 
 coverageEnv
 scTopics
+
+package-lock.json

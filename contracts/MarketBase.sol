@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21; 
 
-import 'zeppelin-solidity/contracts/lifecycle/Destructible.sol';
+import 'openzeppelin-solidity/contracts/lifecycle/Destructible.sol';
 
 /**
   * @title MarketBase
@@ -114,7 +114,7 @@ contract MarketBase is Destructible {
       block.timestamp, _riskConstant, _lenders, _borrowers, _contractsAddressArray[0], 
       _contractsAddressArray[1], _contractsAddressArray[2])) - 1;
     marketIndexToMaker[newId] = msg.sender;
-    NewMarket(newId);
+    emit NewMarket(newId);
     return newId;
   }
 
