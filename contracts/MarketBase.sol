@@ -102,17 +102,17 @@ contract MarketBase is Destructible {
    * @dev An internal method that creates a new market and stores it. This
      method doesn't do any checking and should only be called when the
      nput data is known to be valid
-   * @param _contractsAddressArray An array containing the addresses of instance
+   * @param _contractAddressesArray An array containing the addresses of instance
    *                               component contracts
    *                               [governance, trust, interest]
    */
   function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, 
-    uint _riskConstant, address[] _contractsAddressArray) internal returns (uint) {
+    uint _riskConstant, address[] _contractAddressesArray) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
-      block.timestamp, _riskConstant, _lenders, _borrowers, _contractsAddressArray[0],
-      _contractsAddressArray[1], _contractsAddressArray[2])) - 1;
+      block.timestamp, _riskConstant, _lenders, _borrowers, _contractAddressesArray[0],
+      _contractAddressesArray[1], _contractAddressesArray[2])) - 1;
     marketIndexToMaker[newId] = msg.sender;
     emit NewMarket(newId);
     return newId;

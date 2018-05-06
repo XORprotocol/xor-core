@@ -1,6 +1,6 @@
 var MarketCore = artifacts.require("./MarketCore.sol");
-var ExampleMarketTrust = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketTrust.sol");
-var ExampleMarketInterest = artifacts.require("XorExternalContractExamples/contracts/ExampleMarketInterest.sol");
+var ExampleMarketTrust = artifacts.require("xor-external-contract-examples/contracts/ExampleMarketTrust.sol");
+var ExampleMarketInterest = artifacts.require("xor-external-contract-examples/contracts/ExampleMarketInterest.sol");
 
 const utils = require('./helpers/Utils.js')
 
@@ -9,22 +9,22 @@ contract('MarketBorrow', function(accounts) {
   beforeEach(async function () {
     this.exampleMarketTrust = await ExampleMarketTrust.deployed();
     this.exampleMarketInterest = await ExampleMarketInterest.deployed();
+    this.exampleContractAddresses = ["0x0000", this.exampleMarketTrust.address, 
+    this.exampleMarketInterest.address];
     this.marketCore = await MarketCore.deployed();
     this.createMarket = await this.marketCore.createMarket(
       1000,
       1000,
       1000,
       5,
-      this.exampleMarketTrust.address,
-      this.exampleMarketInterest.address
+      this.exampleContractAddresses
     );
     this.createMarket2 = await this.marketCore.createMarket(
       1000,
       1000,
       1000,
       5,
-      this.exampleMarketTrust.address,
-      this.exampleMarketInterest.address
+      this.exampleContractAddresses
     );
     this.marketId = this.createMarket.logs[0].args["marketId"].toNumber();
     this.marketId2 = this.createMarket2.logs[0].args["marketId"].toNumber();
