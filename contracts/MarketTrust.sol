@@ -22,7 +22,7 @@ contract MarketTrustInterface {
  * @dev Contract handling logic to calculate trust score of a given borrower
  */
 contract MarketTrust is MarketTime {
-  MarketTrustInterface trustContract;
+  MarketTrustInterface trustInstanceContract;
   
   /**
   * @dev Calculates trust score for borrowers by interfacing with a custom Market 
@@ -31,8 +31,8 @@ contract MarketTrust is MarketTime {
   */ 
   function getTrustScore(uint _marketId, address _address) public view returns (uint) {
     Market storage curMarket = markets[_marketId];
-  	trustContract = MarketTrustInterface(curMarket.trustContractAddress);
-  	return trustContract.getTrustScore(_address);
+  	trustInstanceContract = MarketTrustInterface(curMarket.trustContractAddress);
+  	return trustInstanceContract.getTrustScore(_address);
   }
 
 }

@@ -23,7 +23,7 @@ contract MarketInterestInterface {
  * @dev Contract handling logic to calculate interest for a given borrower
  */
 contract MarketInterest is MarketTrust {
-  MarketInterestInterface interestContract;
+  MarketInterestInterface interestInstanceContract;
   /**
   * @dev Calculates interest payment for borrowers by interfacing with a custom Market 
   *      Interest Contract
@@ -32,8 +32,8 @@ contract MarketInterest is MarketTrust {
   */
   function getInterest(uint _marketId, address _address, uint _amt) public view returns (uint) {
     Market storage curMarket = markets[_marketId];
-    interestContract = MarketInterestInterface(curMarket.interestContractAddress);
-    return interestContract.getInterest(_marketId, _address, _amt);
+    interestInstanceContract = MarketInterestInterface(curMarket.interestContractAddress);
+    return interestInstanceContract.getInterest(_marketId, _address, _amt);
   }
 
   /*** MODIFIERS ***/
