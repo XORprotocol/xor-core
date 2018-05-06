@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21; 
 
-import 'zeppelin-solidity/contracts/lifecycle/Destructible.sol';
+import 'openzeppelin-solidity/contracts/lifecycle/Destructible.sol';
 
 /**
   * @title MarketBase
@@ -56,6 +56,9 @@ contract MarketBase is Destructible {
     // Array of all borrowers participating in the market
     address[] borrowers; 
 
+    // Address of external governance contract
+    address governanceContractAddress;
+
     // Address of external trust contract
     address trustContractAddress;
 
@@ -99,15 +102,19 @@ contract MarketBase is Destructible {
    * @dev An internal method that creates a new market and stores it. This
      method doesn't do any checking and should only be called when the
      nput data is known to be valid
-  */
+   * @param _contractAddressesArray An array containing the addresses of instance
+   *                               component contracts
+   *                               [governance, trust, interest]
+   */
   function _createMarket(uint _requestPeriod, uint _loanPeriod, uint _settlementPeriod, 
-    uint _riskConstant, address _trustContractAddress, address _interestContractAddress) internal returns (uint) {
+    uint _riskConstant, address[] _contractAddressesArray) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
     uint newId = markets.push(Market(_requestPeriod, _loanPeriod, _settlementPeriod, 0, 0, 0, 0, 
-      block.timestamp, _riskConstant, _lenders, _borrowers, _trustContractAddress, _interestContractAddress)) - 1;
+      block.timestamp, _riskConstant, _lenders, _borrowers, _contractAddressesArray[0],
+      _contractAddressesArray[1], _contractAddressesArray[2])) - 1;
     marketIndexToMaker[newId] = msg.sender;
-    NewMarket(newId);
+    emit NewMarket(newId);
     return newId;
   }
 

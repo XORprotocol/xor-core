@@ -183,7 +183,7 @@ contract MarketLend is MarketInterest {
     curMarket.lenders.push(msg.sender);
     curMarket.lenderOffers[msg.sender] = msg.value;
     curMarket.totalLoaned = curMarket.totalLoaned.add(msg.value);
-    LoanOffered(_marketId, msg.sender, msg.value);
+    emit LoanOffered(_marketId, msg.sender, msg.value);
   }
 
   /**
@@ -197,7 +197,7 @@ contract MarketLend is MarketInterest {
     require(markets[_marketId].lenderOffers[msg.sender] > 0);
     uint excessAmt = calculateExcess(_marketId, msg.sender);
     msg.sender.transfer(excessAmt);
-    ExcessTransferred(_marketId, msg.sender, excessAmt);
+    emit ExcessTransferred(_marketId, msg.sender, excessAmt);
   }
 
   /**
@@ -210,7 +210,7 @@ contract MarketLend is MarketInterest {
     uint collectibleAmt = getLenderCollectible(msg.sender, _marketId);
     markets[_marketId].lenderCollected[msg.sender] = collectibleAmt;
     msg.sender.transfer(collectibleAmt);
-    CollectibleCollected(_marketId, msg.sender, collectibleAmt);
+    emit CollectibleCollected(_marketId, msg.sender, collectibleAmt);
   }
   
   /*** MODIFIERS ***/
