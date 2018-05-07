@@ -13,7 +13,7 @@ contract MarketTrustInterface {
   *      their interest payment
   * @param _address Address of individual being checked
   */ 
-  function getTrustScore(address _address) public view returns (uint);
+  function getTrustScore(address _address) external view returns (uint);
 }
 
 
@@ -24,15 +24,18 @@ contract MarketTrustInterface {
 contract MarketTrust is MarketTime {
   MarketTrustInterface trustInstanceContract;
   
+  function setTrustContractAddress(uint _marketId) external {
+    trustInstanceContract = MarketTrustInterface(getMarketTrustContract(_marketId));
+  }
   /**
   * @dev Calculates trust score for borrowers by interfacing with a custom Market 
   *      Trust Contract which will be used to determine their interest payment
   * @param _address Address of individual being checked
   */ 
-  function getTrustScore(uint _marketId, address _address) public view returns (uint) {
-    Market storage curMarket = markets[_marketId];
-  	trustInstanceContract = MarketTrustInterface(curMarket.trustContractAddress);
+  function getTrustScore(address _address) external view returns (uint) {
   	return trustInstanceContract.getTrustScore(_address);
   }
+
+  // NOTE: Possible future additions: modifiers for min trust score?
 
 }

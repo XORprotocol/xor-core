@@ -24,25 +24,19 @@ contract MarketBorrow is MarketLend {
    * @dev Fetches all relevant information about a borrower in a particular Market.
    *      Utilizes various getter functions written below
    */
-  function getBorrower(uint _marketId, address _borrower) public view 
-  returns(uint, uint ,uint ,uint ,uint) {
+  function getBorrower(uint _marketId, address _borrower) 
+    public 
+    view 
+    returns(uint, uint ,uint ,uint ,uint) 
+  {
     uint actualRequest = actualBorrowerRequest(_marketId, _borrower);
     return (
       getBorrowerRequest(_marketId, _borrower),
       actualRequest,
       getBorrowerWithdrawn(_marketId, _borrower),
       getBorrowerRepaid(_marketId, _borrower),
-      actualRequest.percent(_marketPool(_marketId), 5)
+      actualRequest.percent(getMarketPool(_marketId), 5)
     );
-  }
-
-  /**
-   * @dev Retrieves the amount (in Wei) that a borrower has requested to loan from
-   *      the market.
-   *      Called before Request Period is complete.
-   */
-  function getBorrowerRequest(uint _marketId, address _address) public view returns (uint) {
-    return markets[_marketId].borrowerRequests[_address];
   }
   
   /**
@@ -54,38 +48,36 @@ contract MarketBorrow is MarketLend {
    * @notice This value should only differ from return value of getBorrowerRequest() for 
    *         ONE borrower in a Market instance
    */ 
-  function actualBorrowerRequest(uint _marketId, address _address) public view returns(uint) {
-    Market storage curMarket = markets[_marketId];
-    if (curMarket.totalLoaned >= curMarket.totalRequested) {
-      return curMarket.borrowerRequests[_address];
+  function actualBorrowerRequest(uint _marketId, address _address) 
+    public
+    view
+    returns(uint) 
+  {
+    uint totalOffered = getMarketTotalOffered(_marketId);
+    uint totalRequested = getMarketTotalRequested(_marketId);
+    uint borrowerRequest = getBorrowerRequest(_marketId, _address);
+    if (totalOffered >= totalRequested) {
+      return getBorrowerRequest(_marketId, _address);
     } else {
       uint curValue = 0;
       uint requestValue = 0;
       for(uint i = 0; i < getBorrowerCount(_marketId); i++) {
-        if (curMarket.borrowers[i] == _address) {
-          if (curValue < curMarket.totalLoaned) {
-            uint newValue = curValue.add(curMarket.borrowerRequests[_address]);
-            if (newValue > curMarket.totalLoaned) {
-              uint diff = newValue.sub(curMarket.totalLoaned);
-              requestValue = curMarket.borrowerRequests[_address].sub(diff);
+        if (getMarketBorrowers(_marketId)[i] == _address) {
+          if (curValue < totalOffered) {
+            uint newValue = curValue.add(borrowerRequest);
+            if (newValue > totalOffered) {
+              uint diff = newValue.sub(totalOffered);
+              requestValue = borrowerRequest.sub(diff);
             } else {
-              requestValue =  curMarket.borrowerRequests[_address];
+              requestValue = borrowerRequest;
             }
           }
           break;
         }
-        curValue = curValue.add(curMarket.borrowerRequests[curMarket.borrowers[i]]);
+        curValue = curValue.add(getBorrowerRequest(_marketId, getMarketBorrowers(_marketId)[i]));
       }
       return requestValue;
     }
-  }
-  
-  /**
-   * @dev Retrieves the amount (in Wei) that a borrower has withdrawn from
-   *      the amount they've borrowed
-   */
-  function getBorrowerWithdrawn(uint _marketId, address _borrower) public view returns (uint) {
-    return markets[_marketId].borrowerWithdrawn[_borrower];
   }
   
   /**
@@ -94,15 +86,7 @@ contract MarketBorrow is MarketLend {
    */
   function getTotalRepayment(uint _marketId, address _address) public view returns (uint) {
     uint request = actualBorrowerRequest(_marketId, _address);
-    return request.add(getInterest(_marketId, _address, request));
-  }
-
-  /**
-   * @dev Retrieves the amount (in Wei) that a borrower has repaid to cover interest
-   *      and principal on their loan
-   */
-  function getBorrowerRepaid(uint _marketId, address _borrower) public view returns (uint) {
-    return markets[_marketId].borrowerRepaid[_borrower];
+    return request.add(getInterest(_address, request));
   }
   
   /**
@@ -112,8 +96,8 @@ contract MarketBorrow is MarketLend {
    */
   function getBorrowerIndex(uint _marketId, address _borrowerAddress) public view returns (uint) {
     uint index = 0;
-    for (uint i = 0; i < markets[_marketId].borrowers.length; i++) {
-      if (markets[_marketId].borrowers[i] == _borrowerAddress) {
+    for (uint i = 0; i < getBorrowerCount(_marketId); i++) {
+      if (getMarketBorrowers(_marketId)[i] == _borrowerAddress) {
         index = i;
       }
     }
@@ -124,14 +108,14 @@ contract MarketBorrow is MarketLend {
    * @dev Fetches the number of registered borrowers in a certain market
    */
   function getBorrowerCount(uint _marketId) public view returns (uint) {
-    return markets[_marketId].borrowers.length;
+    return getMarketBorrowers(_marketId).length;
   }
 
   /**
    * @dev Retrieves address of a borrower from their borrowerID in market
    */
   function getBorrowerAddress(uint _marketId, uint _borrowerId) public view returns (address) {
-    return markets[_marketId].borrowers[_borrowerId];
+    return getMarketBorrowers(_marketId)[_borrowerId];
   }
 
   /**
@@ -151,7 +135,7 @@ contract MarketBorrow is MarketLend {
    * @dev Returns true if given borrower has withdrawn the entire amount of their
    *      loan request, false otherwise
    */
-  function withdrawn(uint _marketId, address _address) public view returns(bool) {
+  function withdrawn(uint _marketId, address _address) public view returns (bool) {
     if (getBorrowerRequest(_marketId, _address) == getBorrowerWithdrawn(_marketId, _address)
       && getBorrowerWithdrawn(_marketId, _address) > 0) {
       return true;
@@ -165,10 +149,9 @@ contract MarketBorrow is MarketLend {
    * otherwise
    */
   function repaid(uint _marketId, address _address) public view returns (bool) {
-    Market storage curMarket = markets[_marketId];
     uint actualRequest = actualBorrowerRequest(_marketId, _address);
-    uint expectedRepayment = actualRequest.add(getInterest(_marketId, _address, actualRequest));
-    if (curMarket.borrowerRepaid[msg.sender] == expectedRepayment) {
+    uint expectedRepayment = actualRequest.add(getInterest(_address, actualRequest));
+    if (getBorrowerRepaid(_marketId, msg.sender) == expectedRepayment) {
       return true;
     } else {
       return false;
@@ -185,52 +168,56 @@ contract MarketBorrow is MarketLend {
    *         offered
    */ 
   function requestLoan(uint _marketId, uint _amount)
-    public
+    external
     isRequestPeriod(_marketId)
     isNotBorrower(_marketId, msg.sender)
     isNotLender(_marketId, msg.sender)
   {
-    Market storage curMarket = markets[_marketId];
-    curMarket.borrowers.push(msg.sender);
-    curMarket.borrowerRequests[msg.sender] = _amount;
-    curMarket.totalRequested = curMarket.totalRequested.add(_amount);
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
+    curMarketVer.borrowers.push(msg.sender);
+    curMarketVer.borrowerRequests[msg.sender] = _amount;
+    curMarketVer.totalRequested = curMarketVer.totalRequested.add(_amount);
     emit LoanRequested(_marketId, msg.sender, _amount);
-  }
-
-  /**
-   * @dev Repays principal and interest back to "repayment pool" to be distributed
-   *      to lenders
-   * @notice Partial repayments not supported at this time.
-   */
-  function repay(uint _marketId)
-    public
-    payable
-    isSettlementPeriod(_marketId)
-    isBorrower(_marketId, msg.sender)
-    hasNotRepaid(_marketId, msg.sender)
-  {
-    Market storage curMarket = markets[_marketId];
-    curMarket.curRepaid = curMarket.curRepaid.add(msg.value);
-    curMarket.borrowerRepaid[msg.sender] = msg.value;
-    addToRepayments(msg.sender, msg.value);
-    emit LoanRepaid(_marketId, msg.sender, msg.value);
   }
 
   /**
    * @dev Withdraws requested amount to borrower's address from lending pool
    */
   function withdrawRequested(uint _marketId)
-    public
+    external
     isLoanPeriod(_marketId)
     isBorrower(_marketId, msg.sender)
     hasNotWithdrawn(_marketId, msg.sender)
   {
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
     uint request = actualBorrowerRequest(_marketId, msg.sender);
     msg.sender.transfer(request);
-    markets[_marketId].borrowerWithdrawn[msg.sender] = request;
-    markets[_marketId].curBorrowed = markets[_marketId].curBorrowed.add(request);
+    curMarketVer.borrowerWithdrawn[msg.sender] = request;
+    curMarketVer.curBorrowed = curMarketVer.curBorrowed.add(request);
   }
   
+  /**
+   * @dev Repays principal and interest back to "repayment pool" to be distributed
+   *      to lenders
+   * @notice Partial repayments not supported at this time.
+   */
+  function repay(uint _marketId)
+    external
+    payable
+    isSettlementPeriod(_marketId)
+    isBorrower(_marketId, msg.sender)
+    hasNotRepaid(_marketId, msg.sender)
+  {
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
+    curMarketVer.curRepaid = curMarketVer.curRepaid.add(msg.value);
+    curMarketVer.borrowerRepaid[msg.sender] = msg.value;
+    addToRepayments(msg.sender, msg.value);
+    emit LoanRepaid(_marketId, msg.sender, msg.value);
+  }
+
   /*** MODIFIERS ***/
   /**
    * @dev Throws if individual being checked is not a borrower in market
