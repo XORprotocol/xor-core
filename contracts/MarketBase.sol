@@ -149,7 +149,7 @@ using SafeMath for uint;
    */
   function _createMarketVersion(uint _marketId, uint _requestPeriod, uint _loanPeriod, 
     uint _settlementPeriod, address[] _contractAddressesArray) 
-    internal returns (uint) {
+    validMarketId(_marketId) internal returns (uint) {
     address[] memory _lenders;
     address[] memory _borrowers;
     Market storage curMarket = markets[_marketId];
@@ -162,133 +162,102 @@ using SafeMath for uint;
   }
 
   /*** OTHER FUNCTIONS ***/
-
-  /**
-   * @dev Retrieves all fields/relevant information about current version of a Market
-   */
-  /*
-  function getMarket(uint _marketId) public view 
-    returns (uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, address, address, address,
-      address[], address[]) {
-    uint curVersionNum = getCurVersionNumber(_marketId);
-    Market memory curMarket = markets[_marketId];
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return (curMarket.createdAt, curMarketVer.updatedAt, curMarketVer.requestPeriod, curMarketVer.loanPeriod,
-      curMarketVer.settlementPeriod, curMarketVer.riskCoefficient, curMarketVer.totalOffered,
-      curMarketVer.totalRequested, curMarketVer.curBorrowed, curMarketVer.curRepaid,
-      curMarketVer.governanceContractAddress, curMarketVer.trustContractAddress, 
-      curMarketVer.interestContractAddress, curMarketVer.lenders, curMarketVer.borrowers);
-  }
-
-  /**
-   * @dev Retrieves all fields/relevant information about a specific version of a Market
-   */
-  /*
-  function getMarketByVersion(uint _marketId, uint _versionNum) public view 
-    returns (uint, uint, uint, uint, uint, uint, uint, uint, uint, uint, address, address, address,
-      address[], address[]) {
-    Market memory queryMarket = markets[_marketId];
-    Version memory queryMarketVer = markets[_marketId].versions[_versionNum];
-    return (queryMarket.createdAt, queryMarketVer.updatedAt, queryMarketVer.requestPeriod, queryMarketVer.loanPeriod,
-      queryMarketVer.settlementPeriod, queryMarketVer.riskCoefficient, queryMarketVer.totalOffered,
-      queryMarketVer.totalRequested, queryMarketVer.curBorrowed, queryMarketVer.curRepaid,
-      queryMarketVer.governanceContractAddress, queryMarketVer.trustContractAddress, 
-      queryMarketVer.interestContractAddress, queryMarketVer.lenders, queryMarketVer.borrowers);
-  }*/
-
   /**
    * @dev Retrieves lastest version number of a given market
    */
-  function getCurVersionNumber(uint _marketId) public view returns (uint) {
+  function getCurVersionNumber(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     return markets[_marketId].curVersion;
   }
 
   /**
    * @dev Retrieves time at which market was initially created
    */
-  function getMarketCreatedAt(uint _marketId) public view returns (uint) {
+  function getMarketCreatedAt(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     return markets[_marketId].createdAt;
   }
 
   /**
    * @dev Retrieves time at which current version of market began
    */
-  function getMarketUpdatedAt(uint _marketId) public view returns (uint) {
+  function getMarketUpdatedAt(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.updatedAt;
+    return markets[_marketId].versions[curVersionNum].updatedAt;
   }
 
-  function getMarketRequestPeriod(uint _marketId) public view returns (uint) {
+  function getMarketRequestPeriod(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.requestPeriod;
+    return markets[_marketId].versions[curVersionNum].requestPeriod;
   }
 
-  function getMarketLoanPeriod(uint _marketId) public view returns (uint) {
+  function getMarketLoanPeriod(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.loanPeriod;
+    return markets[_marketId].versions[curVersionNum].loanPeriod;
   }
 
-  function getMarketSettlementPeriod(uint _marketId) public view returns (uint) {
+  function getMarketSettlementPeriod(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.settlementPeriod;
+    return markets[_marketId].versions[curVersionNum].settlementPeriod;
   }
 
-  function getMarketTotalOffered(uint _marketId) public view returns (uint) {
+  function getMarketTotalOffered(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.totalOffered;
+    return markets[_marketId].versions[curVersionNum].totalOffered;
   }
 
-  function getMarketTotalRequested(uint _marketId) public view returns (uint) {
+  function getMarketTotalRequested(uint _marketId) public view validMarketId(_marketId) 
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.totalRequested;
+    return markets[_marketId].versions[curVersionNum].totalRequested;
   }
 
-  function getMarketCurBorrowed(uint _marketId) public view returns (uint) {
+  function getMarketCurBorrowed(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.curBorrowed;
+    return markets[_marketId].versions[curVersionNum].curBorrowed;
   }
 
-  function getMarketCurRepaid(uint _marketId) public view returns (uint) {
+  function getMarketCurRepaid(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.curRepaid;
+    return markets[_marketId].versions[curVersionNum].curRepaid;
   }
 
-  function getMarketGovernanceContract(uint _marketId) public view returns (address) {
+  function getMarketGovernanceContract(uint _marketId) public view validMarketId(_marketId)
+    returns (address) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.governanceContractAddress;
+    return markets[_marketId].versions[curVersionNum].governanceContractAddress;
   }
 
-  function getMarketTrustContract(uint _marketId) public view returns (address) {
+  function getMarketTrustContract(uint _marketId) public view validMarketId(_marketId) 
+    returns (address) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.trustContractAddress;
+    return markets[_marketId].versions[curVersionNum].trustContractAddress;
   }
 
-  function getMarketInterestContract(uint _marketId) public view returns (address) {
+  function getMarketInterestContract(uint _marketId) public view validMarketId(_marketId) 
+    returns (address) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.interestContractAddress;
-  }
-
-  function getMarketLenders(uint _marketId) public view returns (address[]) {
-    uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.lenders;
-  }
-
-  function getMarketBorrowers(uint _marketId) public view returns (address[]) {
-    uint curVersionNum = getCurVersionNumber(_marketId);
-    Version memory curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.borrowers;
+    return markets[_marketId].versions[curVersionNum].interestContractAddress;
   }
 
   /**
@@ -296,10 +265,11 @@ using SafeMath for uint;
    *      the market.
    *      Called before Request Period is complete.
    */
-  function getLenderOffer(uint _marketId, address _address) public view returns (uint) {
+  function getLenderOffer(uint _marketId, address _lender) 
+    public view validMarketId(_marketId) returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.lenderOffers[_address];
+    return markets[_marketId].versions[curVersionNum].lenderOffers[_lender];
   }
 
   /**
@@ -307,40 +277,44 @@ using SafeMath for uint;
    *      the market.
    *      Called before Request Period is complete.
    */
-  function getBorrowerRequest(uint _marketId, address _address) public view returns (uint) {
+  function getBorrowerRequest(uint _marketId, address _borrower) 
+    public view validMarketId(_marketId) returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.borrowerRequests[_address];
+    return markets[_marketId].versions[curVersionNum].borrowerRequests[_borrower];
   }
 
   /**
    * @dev Retrieves the amount (in Wei) that a borrower has withdrawn from
    *      the amount they've borrowed
    */
-  function getBorrowerWithdrawn(uint _marketId, address _borrower) public view returns (uint) {
+  function getBorrowerWithdrawn(uint _marketId, address _borrower) 
+    public view validMarketId(_marketId) returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.borrowerWithdrawn[_borrower];
+    return markets[_marketId].versions[curVersionNum].borrowerWithdrawn[_borrower];
   }
 
   /**
    * @dev Retrieves the amount (in Wei) that a borrower has repaid to cover interest
    *      and principal on their loan
    */
-  function getBorrowerRepaid(uint _marketId, address _borrower) public view returns (uint) {
+  function getBorrowerRepaid(uint _marketId, address _borrower) 
+    public view validMarketId(_marketId) returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.borrowerRepaid[_borrower];
+    return markets[_marketId].versions[curVersionNum].borrowerRepaid[_borrower];
   }
 
   /**
    * @dev Retrieves the amount (in Wei) that a lender has collected back from
    *      their loan/investment
    */
-  function getLenderCollected(uint _marketId, address _address) public view returns (uint) {
+  function getLenderCollected(uint _marketId, address _lender) 
+    public view validMarketId(_marketId) returns (uint) 
+  {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
-    return curMarketVer.lenderCollected[_address];
+    return markets[_marketId].versions[curVersionNum].lenderCollected[_lender];
   }
 
   /**
@@ -348,13 +322,44 @@ using SafeMath for uint;
    *      available for loans. Takes the minimum of total amount requested by 
    *      borrowers and total amount offered by lenders
    */
-  function getMarketPool(uint _marketId) public view returns (uint) {
-
-    if (getMarketTotalOffered(_marketId) >= getMarketTotalRequested(_marketId)) {
-      return getMarketTotalRequested(_marketId);
+  function getMarketPool(uint _marketId) public view validMarketId(_marketId)
+    returns (uint) 
+  {
+    uint totalOffered = getMarketTotalOffered(_marketId);
+    uint totalRequested = getMarketTotalRequested(_marketId);
+    if (totalOffered >= totalRequested) {
+      return totalRequested;
     } else {
-      return getMarketTotalOffered(_marketId);
+      return totalOffered;
     }
+  }
+
+  /*** SETTERS ***/
+  function setMarketGovernanceContract(uint _marketId, address _contractAddr) 
+    internal validMarketId(_marketId)
+  {
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    markets[_marketId].versions[curVersionNum].governanceContractAddress = _contractAddr;
+  }
+
+  function setMarketTrustContract(uint _marketId, address _contractAddr) 
+    internal validMarketId(_marketId) 
+  {
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    markets[_marketId].versions[curVersionNum].trustContractAddress = _contractAddr;
+  }
+
+  function setMarketInterestContract(uint _marketId, address _contractAddr) 
+    internal validMarketId(_marketId)  
+  {
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    markets[_marketId].versions[curVersionNum].interestContractAddress = _contractAddr;
+  }
+
+  /*** MODIFIERS ***/
+  modifier validMarketId(uint _marketId) {
+    require(_marketId < markets.length);
+    _;
   }
 
 }

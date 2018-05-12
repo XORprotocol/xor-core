@@ -62,7 +62,7 @@ contract MarketBorrow is MarketLend {
       uint curValue = 0;
       uint requestValue = 0;
       for(uint i = 0; i < getBorrowerCount(_marketId); i++) {
-        if (getMarketBorrowers(_marketId)[i] == _address) {
+        if (getBorrowerAddress(_marketId,i) == _address) {
           if (curValue < totalOffered) {
             uint newValue = curValue.add(borrowerRequest);
             if (newValue > totalOffered) {
@@ -74,7 +74,7 @@ contract MarketBorrow is MarketLend {
           }
           break;
         }
-        curValue = curValue.add(getBorrowerRequest(_marketId, getMarketBorrowers(_marketId)[i]));
+        curValue = curValue.add(getBorrowerRequest(_marketId, getBorrowerAddress(_marketId,i)));
       }
       return requestValue;
     }
@@ -97,7 +97,7 @@ contract MarketBorrow is MarketLend {
   function getBorrowerIndex(uint _marketId, address _borrowerAddress) public view returns (uint) {
     uint index = 0;
     for (uint i = 0; i < getBorrowerCount(_marketId); i++) {
-      if (getMarketBorrowers(_marketId)[i] == _borrowerAddress) {
+      if (getBorrowerAddress(_marketId,i) == _borrowerAddress) {
         index = i;
       }
     }
@@ -108,14 +108,16 @@ contract MarketBorrow is MarketLend {
    * @dev Fetches the number of registered borrowers in a certain market
    */
   function getBorrowerCount(uint _marketId) public view returns (uint) {
-    return getMarketBorrowers(_marketId).length;
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    return markets[_marketId].versions[curVersionNum].borrowers.length;
   }
 
   /**
    * @dev Retrieves address of a borrower from their borrowerID in market
    */
   function getBorrowerAddress(uint _marketId, uint _borrowerId) public view returns (address) {
-    return getMarketBorrowers(_marketId)[_borrowerId];
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    return markets[_marketId].versions[curVersionNum].borrowers[_borrowerId];
   }
 
   /**

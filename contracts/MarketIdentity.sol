@@ -32,22 +32,6 @@ contract MarketIdentity is MarketBase {
 
   /*** GETTERS ***/
   /**
-   * @dev Retreives an array of repayments (and the size of each repayment)
-   *      for a particular borrower
-   */
-  function getRepayments(address _address) external view returns (uint[]) {
-  	return repayments[_address];
-  } 
-
-  /**
-   * @dev Retrieves an array of defaults (and the size of each default)
-   *      for a particular borrower
-   */
-  function getDefaults(address _address) external view returns (uint[]) {
-  	return defaults[_address];
-  }
-
-  /**
    * @dev Given the address, return the repayment at a specific index
    */
   function getRepayment(address _address, uint _index) external view returns (uint) {
@@ -65,13 +49,13 @@ contract MarketIdentity is MarketBase {
    * @dev Retrieves the number of repayments
    */
   function getRepaymentsLength(address _address) external view returns (uint) {
-  	return repayments[_address].length;
+    return repayments[_address].length;
   }
 
   /**
    * @dev Retrieves the number of defaults
    */
   function getDefaultsLength(address _address) external view returns (uint) {
-  	return defaults[_address].length;
+    return defaults[_address].length;
   }
 }

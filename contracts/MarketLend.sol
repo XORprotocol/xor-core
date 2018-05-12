@@ -55,7 +55,7 @@ contract MarketLend is MarketInterest {
     if (totalOffered > totalRequested) {
       uint curValue = 0;
       for (uint i = 0; i < getLenderCount(_marketId); i++) {
-        if (getMarketLenders(_marketId)[i] == _address) {
+        if (getLenderAddress(_marketId,i) == _address) {
           if (curValue <= totalRequested) {
             uint newValue = curValue.add(lenderOffer);
             if (newValue > totalRequested) {
@@ -67,7 +67,7 @@ contract MarketLend is MarketInterest {
           }
           break;
         }
-        curValue = curValue.add(getLenderOffer(_marketId,getMarketLenders(_marketId)[i]));
+        curValue = curValue.add(getLenderOffer(_marketId,getLenderAddress(_marketId,i)));
       }
     } else {
       return 0;
@@ -96,14 +96,16 @@ contract MarketLend is MarketInterest {
   }
 
   function getLenderCount(uint _marketId) public view returns (uint) {
-    return getMarketLenders(_marketId).length;
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    return markets[_marketId].versions[curVersionNum].lenders.length;
   }
 
   /**
    * @dev Retrieves address of a lender from their lenderID in market
    */
   function getLenderAddress(uint _marketId, uint _lenderId) public view returns (address) {
-    return getMarketLenders(_marketId)[_lenderId];
+    uint curVersionNum = getCurVersionNumber(_marketId);
+    return markets[_marketId].versions[curVersionNum].lenders[_lenderId];
   }
   
   /**
@@ -148,10 +150,9 @@ contract MarketLend is MarketInterest {
     isNotLender(_marketId, msg.sender)
   {
     uint curVersionNum = getCurVersionNumber(_marketId);
-    Version storage curMarketVer = markets[_marketId].versions[curVersionNum];
-    curMarketVer.lenders.push(msg.sender);
-    curMarketVer.lenderOffers[msg.sender] = msg.value;
-    curMarketVer.totalOffered = curMarketVer.totalOffered.add(msg.value);
+    markets[_marketId].versions[curVersionNum].lenders.push(msg.sender);
+    markets[_marketId].versions[curVersionNum].lenderOffers[msg.sender] = msg.value;
+    markets[_marketId].versions[curVersionNum].totalOffered = markets[_marketId].versions[curVersionNum].totalOffered.add(msg.value);
     emit LoanOffered(_marketId, msg.sender, msg.value);
   }
 
