@@ -9,7 +9,7 @@ contract('MarketCore', function(accounts) {
   beforeEach(async function () {
     this.exampleMarketTrust = await ExampleMarketTrust.deployed();
     this.exampleMarketInterest = await ExampleMarketInterest.deployed();
-    this.exampleContractAddresses = ["0x0000", this.exampleMarketTrust.address, 
+    this.exampleContractAddresses = ["0x0000", this.exampleMarketTrust.address,
     this.exampleMarketInterest.address];
     this.marketCore = await MarketCore.deployed();
     this.createMarket = await this.marketCore.createMarket(
@@ -41,7 +41,7 @@ contract('MarketCore', function(accounts) {
     it('should be zero wei when there is only lenders', async function() {
       await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(10), from: accounts[0]});
 
-      const value = await this.marketCore.marketPool(this.marketId);
+      const value = await this.marketCore.getMarketPool(this.marketId);
       console.log("MARKET POOL:" + value);
       assert.equal(value.toNumber(), 0);
     })
@@ -49,7 +49,7 @@ contract('MarketCore', function(accounts) {
     it('should be zero wei when there is only borrowers', async function() {
       await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[1]});
 
-      const value = await this.marketCore.marketPool(this.marketId);
+      const value = await this.marketCore.getMarketPool(this.marketId);
 
       assert.equal(value.toNumber(), 0);
     })
@@ -58,7 +58,7 @@ contract('MarketCore', function(accounts) {
       await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(5), from: accounts[0]});
       await this.marketCore.requestLoan(this.marketId, web3.toWei(10), {from: accounts[1]});
 
-      const value = await this.marketCore.marketPool(this.marketId);
+      const value = await this.marketCore.getMarketPool(this.marketId);
 
       assert.equal(value.toNumber(), web3.toWei(5));
     })
@@ -67,7 +67,7 @@ contract('MarketCore', function(accounts) {
       await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(10), from: accounts[0]});
       await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[1]});
 
-      const value = await this.marketCore.marketPool(this.marketId);
+      const value = await this.marketCore.getMarketPool(this.marketId);
 
       assert.equal(value.toNumber(), web3.toWei(5));
     })
@@ -76,7 +76,7 @@ contract('MarketCore', function(accounts) {
       await this.marketCore.offerLoan(this.marketId, {value: web3.toWei(5), from: accounts[0]});
       await this.marketCore.requestLoan(this.marketId, web3.toWei(5), {from: accounts[1]});
 
-      const value = await this.marketCore.marketPool(this.marketId);
+      const value = await this.marketCore.getMarketPool(this.marketId);
 
       assert.equal(value.toNumber(), web3.toWei(5));
     })
