@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21; 
 
 import 'xor-libraries/contracts/XorMath.sol';
-import './MarketIdentity.sol';
+import './MarketGovernance.sol';
 
 /**
   * @title MarketTime
@@ -9,7 +9,7 @@ import './MarketIdentity.sol';
           ie. Request, Loan, Settlement, Collection
  */
 
-contract MarketTime is MarketIdentity {
+contract MarketTime is MarketGovernance {
   using XorMath for uint;
   using SafeMath for uint;
 

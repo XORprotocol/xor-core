@@ -28,6 +28,7 @@
   },
   "homepage": "https://xor.finance",
   "dependencies": {
+    "@daostack/arc": "^0.0.0-alpha.38",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "coveralls": "^3.0.1",

@@ -1,6 +1,8 @@
 pragma solidity ^0.4.4;
 
-import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 
 /*
  * DOT
@@ -9,18 +11,35 @@ import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
  * to the creator. Note they can later distribute these tokens
  * as they wish using `transfer` and other `StandardToken` functions.
  */
-contract DOT is StandardToken {
+contract DOT is ERC827Token, MintableToken, BurnableToken {
 
   string public name;
   string public symbol;
-  uint public decimals;
+  uint public constant DECIMAL = 18;
+  uint public cap;
 
-  function DOT(string _name, string _symbol, uint _decimals) {
-	name = _name;
-	symbol = _symbol;
-	decimals = _decimals;
-    totalSupply_ = 0;
-    balances[msg.sender] = 0;
+  /**
+  * @dev Constructor
+  * @param _name - token name
+  * @param _symbol - token symbol
+  * @param _cap - token cap - 0 value means no cap
+  */
+  function DOT(string _name, string _symbol, uint _cap) public {
+      name = _name;
+      symbol = _symbol;
+      cap = _cap;
+  }
+
+  /**
+   * @dev Function to mint tokens
+   * @param _to The address that will receive the minted tokens.
+   * @param _amount The amount of tokens to mint.
+   * @return A boolean that indicates if the operation was successful.
+   */
+  function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
+      if (cap > 0)
+          require(totalSupply_.add(_amount) <= cap);
+      return super.mint(_to, _amount);
   }
 
 }
