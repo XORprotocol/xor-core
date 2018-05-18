@@ -1,13 +1,13 @@
 pragma solidity ^0.4.21; 
 
-import "./MarketToken.sol";
+import "./MarketGovernance.sol";
 
 /**
  * @title MarketIdentity
  * @dev Contract used to determine unique identity of actors on protocol
  * NOTE: Each actor must be verified using some identity
  */
-contract MarketIdentity is MarketToken {
+contract MarketIdentity is MarketGovernance {
 
   mapping (address => uint[]) repayments;
   mapping (address => uint[]) defaults;

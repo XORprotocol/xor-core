@@ -1,8 +1,6 @@
-// String Utils v0.1
-
 /// @title String Utils - String utility functions
 /// @author Piper Merriam - <pipermerriam@gmail.com>
-library StringLib {
+library StringUtils {
     /// @dev Converts an unsigned integert to its string representation.
     /// @param v The number to be converted.
     function uintToBytes(uint v) constant returns (bytes32 ret) {
@@ -40,25 +38,6 @@ library StringLib {
             ret += (digit - 48);
         }
         return ret;
-    }
-
-
-}
-
-
-/// @title String Utils - String utility functions
-/// @author Piper Merriam - <pipermerriam@gmail.com>
-library StringUtils {
-    /// @dev Converts an unsigned integert to its string representation.
-    /// @param v The number to be converted.
-    function uintToBytes(uint v) constant returns (bytes32 ret) {
-            return StringLib.uintToBytes(v);
-    }
-
-    /// @dev Converts a numeric string to it's unsigned integer representation.
-    /// @param v The string to be converted.
-    function bytesToUInt(bytes32 v) constant returns (uint ret) {
-            return StringLib.bytesToUInt(v);
     }
 
 }

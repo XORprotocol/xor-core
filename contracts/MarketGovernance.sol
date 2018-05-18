@@ -1,30 +1,36 @@
 pragma solidity ^0.4.21;
 
-import "./MarketIdentity.sol";
-// import './DOTFactory.sol';
+import "./MarketBase.sol";
 
 
 contract MarketGovernanceInterface {
-  /**
-   * @dev Calculates interest payment for borrowers
-   */
-  function createGovernance( uint _marketId, address _tokenAddress);
+
+  function createDOTUsingMarketId(uint _marketId) public;
+  function createGovernance(uint _marketId);
+  function getDOTTokenAddress() public view returns(address);
 }
 
+
 /**
- * @title MarketIdentity
- * @dev Contract used to determine unique identity of actors on protocol
- * NOTE: Each actor must be verified using some identity
+  * @title ExampleMarketTrust
+  * @dev Example Market Trust contract for showing trust score programmability.
  */
-contract MarketGovernance is MarketIdentity {
 
-  MarketGovernanceInterface governanceContract;
+contract MarketGovernance is MarketBase {
 
-
-  function createGovernance(uint _marketId, address _token) public {
-    Market storage curMarket = markets[_marketId];
-    governanceContract = MarketGovernanceInterface(curMarket.governanceContractAddress);
-    governanceContract.createGovernance(_marketId, _token);
+  function getMarketGovernance(uint _marketId) public view returns(MarketGovernanceInterface) {
+    return MarketGovernanceInterface(getMarketGovernanceContract(_marketId));
   }
 
+  function createDOTUsingMarketId(uint _marketId) public {
+    getMarketGovernance(_marketId).createDOTUsingMarketId(_marketId);
+  }
+
+  function createGovernance(uint _marketId) public {
+    getMarketGovernance(_marketId).createGovernance(_marketId);
+  }
+
+  function getDOTTokenAddress(uint _marketId) public view returns(address) {
+    return getMarketGovernance(_marketId).getDOTTokenAddress();
+  }
 }
