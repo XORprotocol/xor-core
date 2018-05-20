@@ -1,9 +1,9 @@
 pragma solidity ^0.4.4;
 
-// import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
-// import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
-// import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
-import '@daostack/arc/contracts/VotingMachines/GenesisProtocol.sol';
+import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
+// import '@daostack/arc/contracts/VotingMachines/GenesisProtocol.sol';
 
 /*
  * DOT

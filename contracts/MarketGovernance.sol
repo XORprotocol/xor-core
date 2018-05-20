@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-import "./MarketBase.sol";
+import "./MarketToken.sol";
 
 
 contract MarketGovernanceInterface {
@@ -16,7 +16,7 @@ contract MarketGovernanceInterface {
   * @dev Example Market Trust contract for showing trust score programmability.
  */
 
-contract MarketGovernance is MarketBase {
+contract MarketGovernance is MarketToken {
 
   function getMarketGovernance(uint _marketId) public view returns(MarketGovernanceInterface) {
     return MarketGovernanceInterface(getMarketGovernanceContract(_marketId));

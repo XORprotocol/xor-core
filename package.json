@@ -12,7 +12,8 @@
     "deploy": "truffle deploy",
     "console": "truffle console",
     "test": "truffle test",
-    "coverage": "./node_modules/.bin/solidity-coverage"
+    "coverage": "./node_modules/.bin/solidity-coverage",
+    "build-contracts": "sol-merger './contracts/*.sol' ./build"
   },
   "repository": "git+https://github.com/XORprotocol/xor-core.git",
   "keywords": [
