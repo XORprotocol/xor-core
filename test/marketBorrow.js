@@ -16,14 +16,12 @@ contract('MarketBorrow', function(accounts) {
       1000,
       1000,
       1000,
-      5,
       this.exampleContractAddresses
     );
     this.createMarket2 = await this.marketCore.createMarket(
       1000,
       1000,
       1000,
-      5,
       this.exampleContractAddresses
     );
     this.marketId = this.createMarket.logs[0].args["marketId"].toNumber();

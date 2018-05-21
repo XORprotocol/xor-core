@@ -2,6 +2,7 @@ pragma solidity ^0.4.21;
 
 import 'xor-external-contract-examples/contracts/ExampleMarketTrust.sol';
 import 'xor-external-contract-examples/contracts/ExampleMarketInterest.sol';
+// import '@daostack/arc/contracts/VotingMachines/GenesisProtocol.sol';
 
 contract Migrations {
     address public owner;

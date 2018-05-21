@@ -13,7 +13,7 @@ contract MarketInterestInterface {
    * @param _address Address of individual being checked
    * @param _amt The amount being requested by borrower in current market
    */ 
-  function getInterest(uint _marketId, address _address, uint _amt) public view returns (uint);
+  function getInterest(address _address, uint _amt) external view returns (uint);
 }
 
 
@@ -24,24 +24,17 @@ contract MarketInterestInterface {
  */
 contract MarketInterest is MarketTrust {
   MarketInterestInterface interestInstanceContract;
+
+  function setInterestContractAddress(uint _marketId) external {
+    interestInstanceContract = MarketInterestInterface(getMarketInterestContract(_marketId));
+  }
   /**
   * @dev Calculates interest payment for borrowers by interfacing with a custom Market 
   *      Interest Contract
   * @param _address Address of individual being checked
   * @param _amt The amount being requested by borrower in current market
   */
-  function getInterest(uint _marketId, address _address, uint _amt) public view returns (uint) {
-    Market storage curMarket = markets[_marketId];
-    interestInstanceContract = MarketInterestInterface(curMarket.interestContractAddress);
-    return interestInstanceContract.getInterest(_marketId, _address, _amt);
-  }
-
-  /*** MODIFIERS ***/
-  /** 
-  * @dev Throws if said borrower currently has trust score of zero
-  */
-  modifier aboveMinTrust(address _address, uint _marketId) {
-    require(getTrustScore(_marketId, _address) > 0);
-    _;
+  function getInterest(address _address, uint _amt) public view returns (uint) {
+    return interestInstanceContract.getInterest(_address, _amt);
   }
 }
