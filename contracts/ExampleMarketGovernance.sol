@@ -64,6 +64,9 @@ contract ExampleMarketGovernance  {
     return address(exampleMarketAvatarContract);
   }
 
+  function getGenesisProtocolContractAddress() external view returns(address) {
+    return address(genesisProtocolContract);
+  }
 
   function createGovernance(uint _marketId, bytes32 _strMarketId) public {
     StandardToken dotToken = StandardToken(exampleMarketGovernanceContract.getDOTTokenAddress(_marketId));
@@ -85,34 +88,26 @@ contract ExampleMarketGovernance  {
     params[11] = 80;
 
     genesisProtocolContract.setParameters(params);
-
     executableInterfaceContract = ExecutableInterface(address(this));
-
     Reputation reputation = new Reputation();
-
     DAOToken daoToken = DAOToken(exampleMarketGovernanceContract.getDOTTokenAddress(_marketId));
-
     avatarAddress = exampleMarketAvatarContract.createAvatar(_strMarketId, daoToken, reputation);
-
-    // avatar = new Avatar(_strMarketId, daoToken, reputation);
-
-
-
-
-
-  //   // ControllerCreator controllerCreator;
-
-  //   // controllerCreator.create(avatar);
-
-  //   // DaoCreator daoCreator = new DaoCreator(controllerCreator.address);
   }
 
   function propose(uint _numOfChoices, address _proposer) public returns(bytes32) {
-    // genesisProtocolContract.propose(_numOfChoices, "", avatar, executableInterfaceContract, msg.sender);
+    genesisProtocolContract.propose(_numOfChoices, "", avatarAddress, executableInterfaceContract, msg.sender);
   }
 
-  // function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+  // function getParametersHash(
+  //   uint[12] _params) //use array here due to stack too deep issue.
+  //       public
+        
+  //       returns(bytes32) {
+  //   return genesisProtocolContract.getParametersHash(_params);
+  // }
 
+  // function execute(bytes32 _proposalId) public {
+  //   genesisProtocolContract.execute(_proposalId);
   // }
 }
 

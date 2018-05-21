@@ -8,14 +8,13 @@ contract MarketGovernanceInterface {
   function createDOTUsingMarketId(uint _marketId) public;
   function createGovernance(uint _marketId);
   function getDOTTokenAddress() public view returns(address);
+  function getGenesisProtocolContractAddress() external view returns(address);
 }
-
 
 /**
   * @title ExampleMarketTrust
   * @dev Example Market Trust contract for showing trust score programmability.
  */
-
 contract MarketGovernance is MarketToken {
 
   function getMarketGovernance(uint _marketId) public view returns(MarketGovernanceInterface) {
