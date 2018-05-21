@@ -17,7 +17,7 @@ contract MarketTime is MarketIdentity {
    * @dev Returns true if market is currently in Request Period, false otherwise
    */
   function checkRequestPeriod(uint _marketId) public view returns (bool) {
-    uint start = markets[_marketId].initiationTimestamp;
+    uint start = getMarketUpdatedAt(_marketId);
     uint end = requestPeriodEnd(_marketId);
     if (block.timestamp >= start && block.timestamp <= end) {
       return true;
@@ -31,7 +31,7 @@ contract MarketTime is MarketIdentity {
    */
   function checkLoanPeriod(uint _marketId) public view returns (bool) {
     uint start = requestPeriodEnd(_marketId);
-    uint end = lendingPeriodEnd(_marketId);
+    uint end = loanPeriodEnd(_marketId);
     if (block.timestamp >= start && block.timestamp <= end) {
       return true;
     } else {
@@ -43,7 +43,7 @@ contract MarketTime is MarketIdentity {
    * @dev Returns true if market is currently in Settlement Period, false otherwise
    */
   function checkSettlementPeriod(uint _marketId) public view returns (bool) {
-    uint start = lendingPeriodEnd(_marketId);
+    uint start = loanPeriodEnd(_marketId);
     uint end = settlementPeriodEnd(_marketId);
     if (block.timestamp >= start && block.timestamp <= end) {
       return true;
@@ -68,21 +68,21 @@ contract MarketTime is MarketIdentity {
    * @dev Computes time (in Unix Epoch Time) at which Request Period for market ends
    */
   function requestPeriodEnd(uint _marketId) private view returns (uint) {
-    return markets[_marketId].initiationTimestamp.add(markets[_marketId].requestPeriod);
+    return getMarketUpdatedAt(_marketId).add(getMarketRequestPeriod(_marketId));
   }
 
   /** 
    * @dev Computes time (in Unix Epoch Time) at which Lending Period for market ends
    */
-  function lendingPeriodEnd(uint _marketId) private view returns (uint) {
-    return requestPeriodEnd(_marketId).add(markets[_marketId].loanPeriod);
+  function loanPeriodEnd(uint _marketId) private view returns (uint) {
+    return requestPeriodEnd(_marketId).add(getMarketLoanPeriod(_marketId));
   }
 
   /** 
    * @dev Computes time (in Unix Epoch Time) at which Request Period for market ends
    */
   function settlementPeriodEnd(uint _marketId) private view returns (uint) {
-    return lendingPeriodEnd(_marketId).add(markets[_marketId].settlementPeriod);
+    return loanPeriodEnd(_marketId).add(getMarketSettlementPeriod(_marketId));
   }
 
   /** 
