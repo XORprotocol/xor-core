@@ -32,7 +32,7 @@ contract('MarketCore', function(accounts) {
       it('should return two', async function() {
         const count = await this.marketCore.getMarketCount();
 
-        assert.equal(count.toNumber(), 2);
+        assert.equal(count.toNumber(), 3); // Need to account for deployment market
       })
     })
   })

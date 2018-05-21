@@ -1,6 +1,7 @@
 pragma solidity ^0.4.21; 
 
 import './MarketBorrow.sol';
+// import './Strings.sol';
 
 /**
   * @title MarketCore
@@ -19,6 +20,7 @@ contract MarketCore is MarketBorrow {
     require(_requestPeriod > 0 && _loanPeriod > 0 && _settlementPeriod > 0
       && _contractAddressesArray.length == 3);
     _createMarket(_requestPeriod, _loanPeriod, _settlementPeriod, _contractAddressesArray);
+    
   }
 
   /**
