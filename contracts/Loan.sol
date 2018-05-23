@@ -1,5 +1,16 @@
-contract ERC1068 {
-  /// @notice funding the loan. (i.e. investors Rick send _capital Galactic Federation tokens to the contract,
+import './ERC1068Basic.sol';
+import './openzeppelin-solidity/contracts/token/ERC827/ERC827.sol'
+
+contract Loan is ERC1068Basic {
+	ERC827 dotContract;
+	ERC827 tokenContract;
+
+	function Loan(address _dotAddress, address tokenAddress) {
+		dotContract = ERC827(_dotAddress);
+		tokenContract = ERC827(_tokenAddress);
+	}
+
+	/// @notice funding the loan. (i.e. investors Rick send _capital Galactic Federation tokens to the contract,
   ///         the contract transfers principal raised to borrower Morty, contract records Rick's ownership prorated by the amount each contributed).
   /// @dev needs the token ERC20 functions to use _capital. This function will trigger Contribute event.
   /// @param _lender is the lender.

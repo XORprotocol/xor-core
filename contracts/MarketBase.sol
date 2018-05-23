@@ -34,7 +34,7 @@ using SafeMath for uint;
     // A mapping of all versions in existence of the market. The versionNum is 
     // is the uint mapped to each Version. Initial version is 0. 
     mapping(uint => Version) versions;
-
+    mapping(uint => ERC1068Loan) Loans;
   }
  
   struct Version {
