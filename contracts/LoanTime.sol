@@ -17,7 +17,7 @@ contract LoanTime is LoanIdentity {
    * @dev Returns true if laon is currently in Request Period, false otherwise
    */
   function checkRequestPeriod() public view returns (bool) {
-    uint start = getMarketUpdatedAt();
+    uint start = updatedAt;
     uint end = requestPeriodEnd();
     if (block.timestamp >= start && block.timestamp <= end) {
       return true;
@@ -68,27 +68,27 @@ contract LoanTime is LoanIdentity {
    * @dev Computes time (in Unix Epoch Time) at which Request Period for loan ends
    */
   function requestPeriodEnd() private view returns (uint) {
-    return getMarketUpdatedAt().add(getMarketRequestPeriod());
+    return (updatedAt).add(requestPeriod);
   }
 
   /** 
-   * @dev Computes time (in Unix Epoch Time) at which Lending Period for market ends
+   * @dev Computes time (in Unix Epoch Time) at which Lending Period for loan ends
    */
   function loanPeriodEnd() private view returns (uint) {
-    return requestPeriodEnd().add(getMarketLoanPeriod());
+    return requestPeriodEnd().add(loanPeriod);
   }
 
   /** 
-   * @dev Computes time (in Unix Epoch Time) at which Request Period for market ends
+   * @dev Computes time (in Unix Epoch Time) at which Request Period for loan ends
    */
   function settlementPeriodEnd() private view returns (uint) {
-    return loanPeriodEnd().add(getMarketSettlementPeriod());
+    return loanPeriodEnd().add(settlementPeriod);
   }
 
   /** 
-   * @dev Fectches the current period of the market
+   * @dev Fectches the current period of the loan
    */
-  function getMarketPeriod() public view returns (bytes32) {
+  function getPeriod() public view returns (bytes32) {
     if (checkRequestPeriod()) {
       return "request";
     } else if (checkLoanPeriod()) {
@@ -102,7 +102,7 @@ contract LoanTime is LoanIdentity {
 
   /*** MODIFIERS ***/
   /**  
-   * @dev Throws if market is not currently in "Request Period"
+   * @dev Throws if loan is not currently in "Request Period"
    */
   modifier isRequestPeriod() {
     require(checkRequestPeriod());
@@ -110,7 +110,7 @@ contract LoanTime is LoanIdentity {
   }
 
   /** 
-   * @dev Throws if market is not currently in "Loan Period"
+   * @dev Throws if loan is not currently in "Loan Period"
    */
   modifier isLoanPeriod() {
     require(checkLoanPeriod());
@@ -118,7 +118,7 @@ contract LoanTime is LoanIdentity {
   }
 
   /**
-   * @dev Throws if market is not currently in "Settlement Period"
+   * @dev Throws if loan is not currently in "Settlement Period"
    */
   modifier isSettlementPeriod() {
     require(checkSettlementPeriod());
@@ -126,7 +126,7 @@ contract LoanTime is LoanIdentity {
   }
 
   /**
-   * @dev Throws if market is not currently in "Collection Period"
+   * @dev Throws if loan is not currently in "Collection Period"
    */
   modifier isCollectionPeriod() {
     require(checkCollectionPeriod());
@@ -134,7 +134,7 @@ contract LoanTime is LoanIdentity {
   }
   
   /**
-   * @dev Throws if market is before the end of "Request Period"
+   * @dev Throws if loan is before the end of "Request Period"
    */
   modifier isAfterRequestPeriod() {
     require(block.timestamp >= requestPeriodEnd());

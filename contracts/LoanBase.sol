@@ -1,6 +1,11 @@
 import './ERC1068Basic.sol';
 import './openzeppelin-solidity/contracts/token/ERC827/ERC827.sol'
 
+contract LoanGovernanceInterface {
+  function createGovernance();
+  function getGenesisProtocolContractAddress() external view returns(address);
+}
+
 contract LoanBase is ERC1068Basic {
 	ERC827 dotContract;
 	ERC827 tokenContract;
@@ -35,7 +40,8 @@ contract LoanBase is ERC1068Basic {
   uint curRepaid;
 
   // Address of external governance contract
-  address governanceContractAddress;
+  // address governanceContractAddress;
+  LoanGovernanceInterface governanceContract;
 
   // Address of external trust contract
   address trustContractAddress;
@@ -80,7 +86,7 @@ contract LoanBase is ERC1068Basic {
     requestPeriod = _periodArray[0];
     loanPeriod = _periodArray[1];
     settlementPeriod = _periodArray[2];
-    governanceContractAddress = _contractAddressesArray[0];
+    governanceContract = LoanGovernanceInterface(_contractAddressesArray[0]);
     trustContractAddress = _contractAddressesArray[1];
     interestContractAddress = _contractAddressesArray[2];
 		dotContract = ERC827(_contractAddressesArray[3]);
