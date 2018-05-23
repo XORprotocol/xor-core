@@ -69,9 +69,21 @@ contract LoanBase is ERC1068Basic {
   //       collectible amount at any one time
   mapping (address => uint) lenderCollected; 
 
-
-	function Loan(address _dotAddress, address tokenAddress) {
-		dotContract = ERC827(_dotAddress);
-		tokenContract = ERC827(_tokenAddress);
+    /** 
+   * @param _periodArray 
+            [request, loan, settlement]
+   * @param _contractAddressesArray An array containing the addresses of instance
+   *                               component contracts
+   *                               [governance, trust, interest, dotAddress, tokenAddress]
+   */
+	function LoanBase(uint[] _periodArray, address[] _contractAddressesArray) public {
+    requestPeriod = _periodArray[0];
+    loanPeriod = _periodArray[1];
+    settlementPeriod = _periodArray[2];
+    governanceContractAddress = _contractAddressesArray[0];
+    trustContractAddress = _contractAddressesArray[1];
+    interestContractAddress = _contractAddressesArray[2];
+		dotContract = ERC827(_contractAddressesArray[3]);
+		tokenContract = ERC827(_contractAddressesArray[4]);
 	}
 }
