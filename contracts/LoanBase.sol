@@ -1,5 +1,5 @@
 import './ERC1068Basic.sol';
-import './openzeppelin-solidity/contracts/token/ERC827/ERC827.sol'
+import 'openzeppelin-solidity/contracts/token/ERC827/ERC827.sol'
 
 contract LoanBase is ERC1068Basic {
 	ERC827 dotContract;

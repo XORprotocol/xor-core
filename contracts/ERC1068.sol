@@ -1,3 +1,5 @@
+pragma solidity ^0.4.21;
+
 contract ERC1068 {
   /// @notice funding the loan. (i.e. investors Rick send _capital Galactic Federation tokens to the contract,
   ///         the contract transfers principal raised to borrower Morty, contract records Rick's ownership prorated by the amount each contributed).
