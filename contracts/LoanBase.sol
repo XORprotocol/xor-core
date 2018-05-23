@@ -6,6 +6,35 @@ contract LoanGovernanceInterface {
   function getGenesisProtocolContractAddress() external view returns(address);
 }
 
+/**
+ * @title LoanTrustInterface
+ * @dev Interface for custom contracts calculating trust score
+ */
+
+contract LoanTrustInterface {
+  /**
+  * @dev Calculates trust score for borrowers which will be used to determine
+  *      their interest payment
+  * @param _address Address of individual being checked
+  */ 
+  function getTrustScore(address _address) external view returns (uint);
+}
+
+/**
+ * @title MarketInterestInterface
+ * @dev Interface for custom contracts calculating interest
+ */
+
+contract LoanInterestInterface {
+  /**
+   * @dev Calculates interest payment for borrowers
+   * @param _address Address of individual being checked
+   * @param _amt The amount being requested by borrower in current market
+   */ 
+  function getInterest(address _address, uint _amt) external view returns (uint);
+}
+
+
 contract LoanBase is ERC1068Basic {
 	ERC827 dotContract;
 	ERC827 tokenContract;
@@ -44,10 +73,10 @@ contract LoanBase is ERC1068Basic {
   LoanGovernanceInterface governanceContract;
 
   // Address of external trust contract
-  address trustContractAddress;
+  LoanTrustInterface trustContract;
 
   // Address of external interest contract
-  address interestContractAddress;
+  LoanInterestInterface interestContract;
 
   // Array of all lenders participating in the market
   address[] lenders; 
@@ -87,8 +116,8 @@ contract LoanBase is ERC1068Basic {
     loanPeriod = _periodArray[1];
     settlementPeriod = _periodArray[2];
     governanceContract = LoanGovernanceInterface(_contractAddressesArray[0]);
-    trustContractAddress = _contractAddressesArray[1];
-    interestContractAddress = _contractAddressesArray[2];
+    trustContract = LoanTrustInterface(_contractAddressesArray[1]);
+    interestContract = LoanInterestInterface(_contractAddressesArray[2]);
 		dotContract = ERC827(_contractAddressesArray[3]);
 		tokenContract = ERC827(_contractAddressesArray[4]);
 	}

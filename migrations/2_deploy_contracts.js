@@ -4,6 +4,7 @@ var ExampleMarketTrust = artifacts.require("xor-external-contract-examples/contr
 var ExampleMarketInterest = artifacts.require("xor-external-contract-examples/contracts/ExampleMarketInterest.sol");
 var ExampleMarketAvatar = artifacts.require("./ExampleMarketAvatar.sol");
 var ExampleMarketGovernance = artifacts.require("./ExampleMarketGovernance.sol");
+var LoanFactory = artificats.require("./LoanFactory.sol");
 var DOTFactory = artifacts.require("./DOTFactory.sol");
 var StringUtils = artifacts.require("./StringUtils.sol");
 
@@ -14,9 +15,12 @@ module.exports = function(deployer) {
     var stringUtils = await StringUtils.deployed();
     var marketCore = await MarketCore.deployed();
     await deployer.link(StringUtils, DOTFactory);
+    await deployer.deploy(LoanFactory);
     await deployer.deploy(DOTFactory);
+    var loanFactory = await LoanFactory.deployed();
     var dotFactory = await DOTFactory.deployed();
 
+    marketCore.setLoanFactoryContractAddress(loanFactory.address);
     marketCore.setMarketTokenContractAddress(dotFactory.address);
     dotFactory.setMarketTokenContractAddress(marketCore.address);
 
