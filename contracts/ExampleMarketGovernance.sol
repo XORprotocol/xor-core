@@ -13,7 +13,7 @@ import '@daostack/arc/contracts/VotingMachines/GenesisProtocol.sol';
 contract ExampleMarketGovernanceInterface {
 
   // Address from MarketCore
-  function getDOTTokenAddress(uint _marketId) public returns(address);
+  function getDOTTokenAddress() public returns(address);
 }
 
 contract ExampleMarketAvatarInterface {
@@ -68,8 +68,8 @@ contract ExampleMarketGovernance  {
     return address(genesisProtocolContract);
   }
 
-  function createGovernance(uint _marketId, bytes32 _strMarketId) public {
-    StandardToken dotToken = StandardToken(exampleMarketGovernanceContract.getDOTTokenAddress(_marketId));
+  function createGovernance() public {
+    StandardToken dotToken = StandardToken(exampleMarketGovernanceContract.getDOTTokenAddress());
 
     genesisProtocolContract = new GenesisProtocol(dotToken);
 
